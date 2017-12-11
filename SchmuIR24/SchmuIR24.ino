@@ -104,10 +104,14 @@ void sendIrRaw(int i){
   for(int x=0; x<rawSize;x++){
       tmpRaw[x]= strtoul(getValue(tmp, ',', x).c_str(),NULL,0);
   }
+
+  //finally the code is sent
+  irsend.sendRaw(tmpRaw, rawSize+1, 38);
 }
 
-String getValue(String data, char separator, int index)
-{
+String getValue(String data, char separator, int index){
+  //a usefull method by an anonymus stackoverflow-user.
+  //It simply realises Splitter in C 
   int found = 0;
   int strIndex[] = {0, -1};
   int maxIndex = data.length()-1;
@@ -161,6 +165,7 @@ void handleNewIr() {
 }
 
 String getCode(decode_results *results) {
+  // turns results in a field into a String
   String tmpOut;
   for (uint16_t i = 1; i < results->rawlen; i++) {
     uint32_t usecs;
@@ -171,7 +176,6 @@ String getCode(decode_results *results) {
       tmpOut+=",";
     }
   }
-  //encoding(results);
   Serial.print(" ");
   serialPrintUint64(results->value, HEX);
   Serial.println("");
@@ -182,11 +186,7 @@ void handleSaved() {
   String tmpName = server.arg("name");
   Serial.println("handleSaved");
   if (tmpName.equals("")) {
-  /*  unsigned long long1 = (unsigned long)((top & 0xFFFF0000) >> 16 );
-    unsigned long long2 = (unsigned long)((top & 0x0000FFFF));
-    //May be the wrong conversion... should be tested soon.ml
-    tmpName = String(long1, DEC) + String(long2, DEC);*/
-    tmpName = "You are top";
+    tmpName = top;
   }
   nameList.add(tmpName);
   Serial.println(server.arg("name"));
@@ -223,10 +223,6 @@ String getMainLayout(String tmpName) {
   for (int i = 0; i < resultList.size(); i++) {
     String codeResult = resultList.get(i);
     String tmpCode;
-    //unsigned long long1 = (unsigned long)((codeResult & 0xFFFF0000) >> 16 );
-    //unsigned long long2 = (unsigned long)((codeResult & 0x0000FFFF));
-    //May be the wrong conversion... should be tested soon.ml
-    //tmpCode = String(long1, DEC) + String(long2, DEC);
     tmpCode = i;
     tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a></p>";
   }
