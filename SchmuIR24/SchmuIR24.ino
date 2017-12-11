@@ -101,8 +101,8 @@ void sendIrRaw(int i){
   uint16_t tmpRaw[rawSize+1];
 
   //Fills the field with values
-  for(int x=0; x<tmpRaw.length();x++){
-      tmpRaw[x]=getValue(tmp, ',', x);
+  for(int x=0; x<rawSize;x++){
+      tmpRaw[x]= strtoul(getValue(tmp, ',', x).c_str(),NULL,0);
   }
 }
 
@@ -171,12 +171,10 @@ String getCode(decode_results *results) {
       tmpOut+=",";
     }
   }
-  // Comment
   //encoding(results);
   Serial.print(" ");
   serialPrintUint64(results->value, HEX);
   Serial.println("");
-
   return tmpOut;
 }
 
