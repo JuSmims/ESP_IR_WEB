@@ -16,8 +16,8 @@
 // board).
 
 
-const char* ssid = "AndroidAP";
-const char* password = "12345679";
+const char* ssid = "Brio-2.4";
+const char* password = "xxxxxxxxxx";
 
 boolean notAdded = true;
 int timeout = 200;
@@ -78,88 +78,97 @@ void handleIr() {
   for (uint8_t i = 0; i < server.args(); i++) {
     if (server.argName(i) == "code") {
       int index = strtoul(server.arg(i).c_str(), NULL, 10);
-      Serial.println(i);
-      sendIrRaw(i);
+      Serial.println(index);
+      sendIrRaw(index);
     }
   }
   handleRoot();
 }
 
-void sendIrRaw(int i){
+void sendIrRaw(int i) {
   //Saves the code to send in variable
   String tmp = resultList.get(i);
-
+  Serial.println("Nr. "+i);
+  Serial.println("Sending: " + tmp);
   //counts how much parts (divided by char ',') the String str has
+  Serial.println("Temp is "+(String)tmp.length()+" long");
   int rawSize = 0;
-  for(int p=0; p<tmp.length(); p++){
-    if(tmp.charAt(i)==','){
+  for (int p = 0; p < tmp.length(); p++) {
+    //Comparison wont work...
+    String test = (String) tmp.charAt(i);
+    if (test == ",") {
+      Serial.print(".");
       rawSize++;
     }
   }
 
   //creates a one-dimensional field with the required length to stoer every part of the string as int-sequence
-  uint16_t tmpRaw[rawSize+1];
+  uint16_t tmpRaw[rawSize + 1];
 
   //Fills the field with values
-  for(int x=0; x<rawSize;x++){
-      tmpRaw[x]= strtoul(getValue(tmp, ',', x).c_str(),NULL,0);
+  Serial.println("");
+  Serial.print("raw["+(String)rawSize+"] {");
+  for (int x = 0; x < rawSize; x++) {
+    tmpRaw[x] = strtoul(getValue(tmp, ',', x).c_str(), NULL, 0);
+    Serial.print(tmpRaw[x]+",");
   }
+  Serial.print("}");
 
   //finally the code is sent
-  irsend.sendRaw(tmpRaw, rawSize+1, 38);
+  irsend.sendRaw(tmpRaw, rawSize + 1, 38);
 }
 
-String getValue(String data, char separator, int index){
+String getValue(String data, char separator, int index) {
   //a usefull method by an anonymus stackoverflow-user.
-  //It simply realises Splitter in C 
+  //It simply realises Splitter in C
   int found = 0;
   int strIndex[] = {0, -1};
-  int maxIndex = data.length()-1;
+  int maxIndex = data.length() - 1;
 
-  for(int i=0; i<=maxIndex && found<=index; i++){
-    if(data.charAt(i)==separator || i==maxIndex){
-        found++;
-        strIndex[0] = strIndex[1]+1;
-        strIndex[1] = (i == maxIndex) ? i+1 : i;
+  for (int i = 0; i <= maxIndex && found <= index; i++) {
+    if (data.charAt(i) == separator || i == maxIndex) {
+      found++;
+      strIndex[0] = strIndex[1] + 1;
+      strIndex[1] = (i == maxIndex) ? i + 1 : i;
     }
   }
 
-  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
 void handleNewIr() {
   Serial.println("handleNewIr");
   server.send(200, "text/html", getIrWait());
   boolean notreceived = true;
-  for(int i=0; i<timeout; i++) {
+  for (int i = 0; i < timeout; i++) {
     Serial.println(".");
     if (irrecv.decode(&results)) {
+      top = getCode(&results);
       // print() & println() can't handle printing long longs. (uint64_t)
       serialPrintUint64(results.value, HEX);
       Serial.println("");
       irrecv.resume();  // Receive the next value
-      top = getCode(&results);
       serialPrintUint64(results.value);
       Serial.println("");
-      Serial.println("schmu received");
+      Serial.println("schmu received: " + top);
       notreceived = false;
       Serial.println("####");
     }
-    if(!notreceived){
+    if (!notreceived) {
       break;
     }
     delay(100);
   }
-  if(!notreceived){
-  Serial.println("handleNewIR Test1");
-  server.sendContent("<html>" \
-                     "<head><title>Received Signal</title></head>" \
-                     "<body>" \
-                     "<p><a href=\"saveHandle\">Okay!</a></p>" \
-                     "</body>" \
-                     "</html>");
+  if (!notreceived) {
+    Serial.println("handleNewIR Test1");
+    server.sendContent("<html>" \
+                       "<head><title>Received Signal</title></head>" \
+                       "<body>" \
+                       "<p><a href=\"saveHandle\">Okay!</a></p>" \
+                       "</body>" \
+                       "</html>");
   }
-  else{
+  else {
     handleRoot();
   }
 }
@@ -169,11 +178,11 @@ String getCode(decode_results *results) {
   String tmpOut;
   for (uint16_t i = 1; i < results->rawlen; i++) {
     uint32_t usecs;
-    for (usecs = results->rawbuf[i] * RAWTICK; usecs > UINT16_MAX; usecs -= UINT16_MAX){
+    for (usecs = results->rawbuf[i] * RAWTICK; usecs > UINT16_MAX; usecs -= UINT16_MAX) {
     }
-    tmpOut+=(String)usecs;
-    if (i < results->rawlen - 1){
-      tmpOut+=",";
+    tmpOut += (String)usecs;
+    if (i < results->rawlen - 1) {
+      tmpOut += ",";
     }
   }
   Serial.print(" ");
@@ -211,18 +220,49 @@ String getMainLayout(String tmpName) {
     }
     nameList.add(tmpName);
     resultList.add(top);
+    Serial.println("Added: " + nameList.get(nameList.size() - 1));
+    Serial.println("Only top: " + top);
+    Serial.println("Kind of Raw: " + resultList.get(resultList.size() - 1));
     notAdded = false;
   }
-  String tmp = "<html>" \
-               "<head><title>IR-SMART-REMOTE-ULTRA</title></head>" \
-               "<body>" \
-               "<h1>You can send and record signals from here" \
-               "Please select your option!</h1>" \
-               "<p><a href=\"addnew\">Add new IR-Signal</a></p>";
+  String tmp = "<html>"\
+               "<title>IR-SMART-HUB</title>"\
+               "<style>"\
+               "body {"\
+               "padding-top: 80px;"\
+               "text-align: center;"\
+               "font-family: monaco, monospace;"\
+               "background: url(https://media.giphy.com/media/lSzQjkthGS1gc/giphy.gif) 50%;"\
+               "background-size: cover;"\
+             "}"\
+               "h1, h2 {"\
+               "display: inline-block;"\
+               "background: #fff;"\
+             "}"\
+               "h1 {"\
+               "font-size: 30px"\
+             "}"\
+               "h2 {"\
+               "font-size: 20px;"\
+             "}"\
+               "span {"\
+               "background: #fd0;"\
+             "}"\
+               "</style>"\
+               "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
+               "<h2>You can send and record IR-Signals from here!</h2>"\
+               "<br>"\
+               "<h2>Please select an option!</h2>"\
+               "<br>"\
+               "<br>"\
+               "<br>"\
+               "<button><a href=\"addnew\">Add new IR-Signal</a></button>"\
+               "</html>";
 
   for (int i = 0; i < resultList.size(); i++) {
-    String codeResult = resultList.get(i);
+    //String codeResult = resultList.get(i);
     String tmpCode;
+    Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
     tmpCode = i;
     tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a></p>";
   }
@@ -274,61 +314,61 @@ void setupIrServer() {
 
 String getIrWait() {
   String  wait = "<html>"\
-         "<style>"\
-         "body {"\
-         "padding-top: 80px;"\
-         "text-align: center;"\
-         "font-family: monaco, monospace;"\
-     /*    "background: url(https://i.imgur.com/XeR6gnH.gif) 50%;"\ */
-         "background-size: auto;"\
-       "}"\
-         "h1, h2 {"\
-         "display: inline-block;"\
-         "background: #fff;"\
-       "}"\
-         "h1 {"\
-         "font-size: 30px"\
-       "}"\
-         "h2 {"\
-         "font-size: 20px;"\
-       "}"\
-         "span {"\
-         "background: #fd0;"\
-       "}"\
-         ".loader {"\
-       "position: absolute;"\
-         "left: 50%;"\
-         "top: 50%;"\
-         "z-index: 1;"\
-         "width: 150px;"\
-         "height: 150px;"\
-         "margin: -75px 0 0 -75px;"\
-         "border: 16px solid #f3f3f3;"\
-         "border-radius: 50%;"\
-         "border-top: 16px solid #3498db;"\
-         "width: 120px;"\
-         "height: 120px;"\
-         "-webkit-animation: spin 2s linear infinite;"\
-         "animation: spin 2s linear infinite;"\
-       "}"\
+                 "<style>"\
+                 "body {"\
+                 "padding-top: 80px;"\
+                 "text-align: center;"\
+                 "font-family: monaco, monospace;"\
+                 "background: url(https://i.imgur.com/XeR6gnH.gif) 50%;"\
+                 "background-size: auto;"\
+                 "}"\
+                 "h1, h2 {"\
+                 "display: inline-block;"\
+                 "background: #fff;"\
+                 "}"\
+                 "h1 {"\
+                 "font-size: 30px"\
+                 "}"\
+                 "h2 {"\
+                 "font-size: 20px;"\
+                 "}"\
+                 "span {"\
+                 "background: #fd0;"\
+                 "}"\
+                 ".loader {"\
+                 "position: absolute;"\
+                 "left: 50%;"\
+                 "top: 50%;"\
+                 "z-index: 1;"\
+                 "width: 150px;"\
+                 "height: 150px;"\
+                 "margin: -75px 0 0 -75px;"\
+                 "border: 16px solid #f3f3f3;"\
+                 "border-radius: 50%;"\
+                 "border-top: 16px solid #3498db;"\
+                 "width: 120px;"\
+                 "height: 120px;"\
+                 "-webkit-animation: spin 2s linear infinite;"\
+                 "animation: spin 2s linear infinite;"\
+                 "}"\
 
-         "@keyframes spin {"\
-         "0% { transform: rotate(0deg); }"\
-         "100% { transform: rotate(360deg); }"\
-       "}"\
+                 "@keyframes spin {"\
+                 "0% { transform: rotate(0deg); }"\
+                 "100% { transform: rotate(360deg); }"\
+                 "}"\
 
-         "</style>"\
-         "<h1>Please Wait...<span> Waiting for yout IR Signal</span></h1><br>"\
-         "<h2>Please send a Signal now!</h2>"\
-         "<div class=\"loader\"></div>"\
-         "</html>";
-         return wait;
-       }
+                 "</style>"\
+                 "<h1>Please Wait...<span> Waiting for yout IR Signal</span></h1><br>"\
+                 "<h2>Please send a Signal now!</h2>"\
+                 "<div class=\"loader\"></div>"\
+                 "</html>";
+  return wait;
+}
 
-         void checkSchmu(){
-         String s=(String)resultList.size();
-         Serial.println("Wir haben " + s + " Einträge an IR - Signals");
-       Serial.println("Der Name des letzten Elements ist : " +nameList.get(nameList.size()));
-       }
+void checkSchmu() {
+  String s = (String)resultList.size();
+  Serial.println("Wir haben " + s + " Einträge an IR - Signals");
+  Serial.println("Der Name des letzten Elements ist : " + nameList.get(nameList.size()));
+}
 
 
