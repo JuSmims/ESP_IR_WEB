@@ -97,8 +97,8 @@ void sendIrRaw(int i){
   Serial.println(rawSize);
   uint16_t tmpRaw[rawSize+1];
 //  for(int x=0; x<tmpRaw.length;x++){
-    tmpRaw[x]=getValue(tmp, ',', x);
-  }
+//    tmpRaw[x]=getValue(tmp, ',', x);
+ // }
 }
 
 void handleNewIr() {
@@ -314,3 +314,5 @@ String getIrWait() {
          Serial.println("Wir haben " + s + " Einträge an IR - Signals");
        Serial.println("Der Name des letzten Elements ist : " +nameList.get(nameList.size()));
        }
+
+
