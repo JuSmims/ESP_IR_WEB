@@ -86,19 +86,41 @@ void handleIr() {
 }
 
 void sendIrRaw(int i){
+  //Saves the code to send in variable
   String tmp = resultList.get(i);
-  Serial.println(tmp);
+
+  //counts how much parts (divided by char ',') the String str has
   int rawSize = 0;
   for(int p=0; p<tmp.length(); p++){
     if(tmp.charAt(i)==','){
       rawSize++;
     }
   }
-  Serial.println(rawSize);
+
+  //creates a one-dimensional field with the required length to stoer every part of the string as int-sequence
   uint16_t tmpRaw[rawSize+1];
-//  for(int x=0; x<tmpRaw.length;x++){
-//    tmpRaw[x]=getValue(tmp, ',', x);
- // }
+
+  //Fills the field with values
+  for(int x=0; x<rawSize;x++){
+      tmpRaw[x]= strtoul(getValue(tmp, ',', x).c_str(),NULL,0);
+  }
+}
+
+String getValue(String data, char separator, int index)
+{
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++){
+    if(data.charAt(i)==separator || i==maxIndex){
+        found++;
+        strIndex[0] = strIndex[1]+1;
+        strIndex[1] = (i == maxIndex) ? i+1 : i;
+    }
+  }
+
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
 void handleNewIr() {
@@ -149,12 +171,10 @@ String getCode(decode_results *results) {
       tmpOut+=",";
     }
   }
-  // Comment
   //encoding(results);
   Serial.print(" ");
   serialPrintUint64(results->value, HEX);
   Serial.println("");
-
   return tmpOut;
 }
 
