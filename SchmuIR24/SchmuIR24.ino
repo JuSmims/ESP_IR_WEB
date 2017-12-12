@@ -94,10 +94,11 @@ void sendIrRaw(int i) {
   Serial.println("Temp is "+(String)tmpIRString.length()+" long");
   int rawSize = 0;
   for (int p = 0; p < tmpIRString.length(); p++) {
-    //Comparison wont work...
+    //Comparison wont work... UPDATE: IT WORKS.ml
     String test = (String) tmpIRString.charAt(p);
-    Serial.println("comparison test , : "+test);
-    yield();
+    //Serial.println("comparison test , : "+test);
+    //yield();
+    delay(0);
     if (test == ",") {
       Serial.print(".");
       rawSize++;
@@ -111,9 +112,11 @@ void sendIrRaw(int i) {
   Serial.println("");
   Serial.print("raw["+(String)rawSize+"] {");
   for (int x = 0; x < rawSize; x++) {
-    tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
-    Serial.print(tmpRaw[x]+",");
-    yield();
+    //tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
+    tmpRaw[x] = (uint16_t) getValue(tmpIRString, ',', x).toInt();
+    //Serial.print(tmpRaw[x]+",");
+    //yield();
+    delay(0);
   }
   Serial.print("}");
 
@@ -127,7 +130,7 @@ String getValue(String data, char separator, int index) {
   int found = 0;
   int strIndex[] = {0, -1};
   int maxIndex = data.length() - 1;
-  Serial.println("getting Value of: "+data);
+  //Serial.println("getting Value of: "+data);
   for (int i = 0; i <= maxIndex && found <= index; i++) {
     if (data.charAt(i) == separator || i == maxIndex) {
       found++;
@@ -135,7 +138,8 @@ String getValue(String data, char separator, int index) {
       strIndex[1] = (i == maxIndex) ? i + 1 : i;
     }
   }
-
+  String valueIs = found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+  //Serial.println("Value is: "+valueIs);
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
