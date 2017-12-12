@@ -17,7 +17,7 @@
 
 
 const char* ssid = "Brio-2.4";
-const char* password = "xxxxxxxxxx";
+const char* password = "xxxx";
 
 boolean notAdded = true;
 int timeout = 200;
@@ -87,15 +87,17 @@ void handleIr() {
 
 void sendIrRaw(int i) {
   //Saves the code to send in variable
-  String tmp = resultList.get(i);
+  String tmpIRString = resultList.get(i);
   Serial.println("Nr. "+i);
-  Serial.println("Sending: " + tmp);
+  Serial.println("Sending: " + tmpIRString);
   //counts how much parts (divided by char ',') the String str has
-  Serial.println("Temp is "+(String)tmp.length()+" long");
+  Serial.println("Temp is "+(String)tmpIRString.length()+" long");
   int rawSize = 0;
-  for (int p = 0; p < tmp.length(); p++) {
+  for (int p = 0; p < tmpIRString.length(); p++) {
     //Comparison wont work...
-    String test = (String) tmp.charAt(i);
+    String test = (String) tmpIRString.charAt(p);
+    Serial.println("comparison test , : "+test);
+    yield();
     if (test == ",") {
       Serial.print(".");
       rawSize++;
@@ -109,8 +111,9 @@ void sendIrRaw(int i) {
   Serial.println("");
   Serial.print("raw["+(String)rawSize+"] {");
   for (int x = 0; x < rawSize; x++) {
-    tmpRaw[x] = strtoul(getValue(tmp, ',', x).c_str(), NULL, 0);
+    tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
     Serial.print(tmpRaw[x]+",");
+    yield();
   }
   Serial.print("}");
 
@@ -124,7 +127,7 @@ String getValue(String data, char separator, int index) {
   int found = 0;
   int strIndex[] = {0, -1};
   int maxIndex = data.length() - 1;
-
+  Serial.println("getting Value of: "+data);
   for (int i = 0; i <= maxIndex && found <= index; i++) {
     if (data.charAt(i) == separator || i == maxIndex) {
       found++;
