@@ -17,7 +17,7 @@
 
 
 const char* ssid = "UPCBD2D355";
-const char* password = "Rt2Stdfhpcnd";
+const char* password = "XXX";
 
 boolean notAdded = true;
 int timeout = 200;
