@@ -1,3 +1,4 @@
+
 #ifndef UNIT_TEST
 #include <Arduino.h>
 #endif
@@ -16,8 +17,8 @@
 // board).
 
 
-const char* ssid = "Brio-2.4";
-const char* password = "xxxx";
+const char* ssid = "AndroidAP";
+const char* password = "12345679";
 
 boolean notAdded = true;
 int timeout = 200;
@@ -97,8 +98,7 @@ void sendIrRaw(int i) {
     //Comparison wont work... UPDATE: IT WORKS.ml
     String test = (String) tmpIRString.charAt(p);
     //Serial.println("comparison test , : "+test);
-    //yield();
-    delay(0);
+    yield();
     if (test == ",") {
       Serial.print(".");
       rawSize++;
@@ -111,17 +111,19 @@ void sendIrRaw(int i) {
   //Fills the field with values
   Serial.println("");
   Serial.print("raw["+(String)rawSize+"] {");
+  Serial.println("Rawing the array: ");
   for (int x = 0; x < rawSize; x++) {
     //tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
     tmpRaw[x] = (uint16_t) getValue(tmpIRString, ',', x).toInt();
     //Serial.print(tmpRaw[x]+",");
-    //yield();
-    delay(0);
+    Serial.print(getValue(tmpIRString, ',', x).toInt());
+    yield();
   }
   Serial.print("}");
 
   //finally the code is sent
   irsend.sendRaw(tmpRaw, rawSize + 1, 38);
+  Serial.println("Sended!");
 }
 
 String getValue(String data, char separator, int index) {
@@ -218,11 +220,7 @@ String getMainLayout(String tmpName) {
   }
   if (notAdded) {
     Serial.println(tmpName);
-    if (tmpName.equals("")) {
-      //unsigned long long1 = (unsigned long)((top & 0xFFFF0000) >> 16 );
-      //unsigned long long2 = (unsigned long)((top & 0x0000FFFF));
-      //May be the wrong conversion... should be tested soon.ml
-      //tmpName = String(long1, DEC) + String(long2, DEC);
+    if (tmpName.equals("")){
       tmpName = "Choose a name you murderer";
     }
     nameList.add(tmpName);
@@ -232,6 +230,7 @@ String getMainLayout(String tmpName) {
     Serial.println("Kind of Raw: " + resultList.get(resultList.size() - 1));
     notAdded = false;
   }
+  
   String tmp = "<html>"\
                "<title>IR-SMART-HUB</title>"\
                "<style>"\
@@ -267,7 +266,6 @@ String getMainLayout(String tmpName) {
                "</html>";
 
   for (int i = 0; i < resultList.size(); i++) {
-    //String codeResult = resultList.get(i);
     String tmpCode;
     Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
     tmpCode = i;
