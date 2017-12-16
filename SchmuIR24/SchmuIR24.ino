@@ -17,8 +17,8 @@
 // board).
 
 
-const char* ssid = "AndroidAP";
-const char* password = "12345679";
+const char* ssid = "Brio-2.4";
+const char* password = "xxxxx";
 
 boolean notAdded = true;
 int timeout = 200;
@@ -112,7 +112,7 @@ void sendIrRaw(int i) {
   Serial.println("");
   Serial.print("raw["+(String)rawSize+"] {");
   Serial.println("Rawing the array: ");
-  for (int x = 0; x < rawSize; x++) {
+  for (int x = 0; x < rawSize+1; x++) {
     //tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
     tmpRaw[x] = (uint16_t) getValue(tmpIRString, ',', x).toInt();
     //Serial.print(tmpRaw[x]+",");
