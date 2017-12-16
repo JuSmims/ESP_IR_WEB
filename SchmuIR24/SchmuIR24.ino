@@ -1,3 +1,4 @@
+
 #ifndef UNIT_TEST
 #include <Arduino.h>
 #endif
@@ -16,8 +17,8 @@
 // board).
 
 
-const char* ssid = "UPCBD2D355";
-const char* password = "XXX";
+const char* ssid = "Brio-2.4";
+const char* password = "xxxxx";
 
 boolean notAdded = true;
 int timeout = 200;
@@ -66,7 +67,9 @@ void handleSave() {
               "<body>" \
               "<h1>You received a signal succesfully</h1>" \
               "<form action='name'><p>Name your signal <input type='text' name='name' size=50 autofocus> <input type='submit' value='Submit'></form>"\
+              "<p><a href=\"save\">Save the received signal.</a></p>" \
               "<p><a href=\"notsave\">Decline received signal.</a></p>" \
+              "<p><a href=\"maybe\">Maybe save?</a></p>" \
               "</body>" \
               "</html>");
   delay(100);
@@ -92,9 +95,9 @@ void sendIrRaw(int i) {
   Serial.println("Temp is "+(String)tmpIRString.length()+" long");
   int rawSize = 0;
   for (int p = 0; p < tmpIRString.length(); p++) {
-    //Comparison wont work...
+    //Comparison wont work... UPDATE: IT WORKS.ml
     String test = (String) tmpIRString.charAt(p);
-    Serial.println("comparison test , : "+test);
+    //Serial.println("comparison test , : "+test);
     yield();
     if (test == ",") {
       Serial.print(".");
@@ -108,15 +111,19 @@ void sendIrRaw(int i) {
   //Fills the field with values
   Serial.println("");
   Serial.print("raw["+(String)rawSize+"] {");
-  for (int x = 0; x < rawSize; x++) {
-    tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
-    Serial.print(tmpRaw[x]+",");
+  Serial.println("Rawing the array: ");
+  for (int x = 0; x < rawSize+1; x++) {
+    //tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
+    tmpRaw[x] = (uint16_t) getValue(tmpIRString, ',', x).toInt();
+    //Serial.print(tmpRaw[x]+",");
+    Serial.print(getValue(tmpIRString, ',', x).toInt());
     yield();
   }
   Serial.print("}");
 
   //finally the code is sent
   irsend.sendRaw(tmpRaw, rawSize + 1, 38);
+  Serial.println("Sended!");
 }
 
 String getValue(String data, char separator, int index) {
@@ -125,7 +132,7 @@ String getValue(String data, char separator, int index) {
   int found = 0;
   int strIndex[] = {0, -1};
   int maxIndex = data.length() - 1;
-  Serial.println("getting Value of: "+data);
+  //Serial.println("getting Value of: "+data);
   for (int i = 0; i <= maxIndex && found <= index; i++) {
     if (data.charAt(i) == separator || i == maxIndex) {
       found++;
@@ -133,6 +140,8 @@ String getValue(String data, char separator, int index) {
       strIndex[1] = (i == maxIndex) ? i + 1 : i;
     }
   }
+  String valueIs = found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+  //Serial.println("Value is: "+valueIs);
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
@@ -211,8 +220,8 @@ String getMainLayout(String tmpName) {
   }
   if (notAdded) {
     Serial.println(tmpName);
-    if (tmpName.equals("")) {
-      tmpName = "This code is just a placeholder";
+    if (tmpName.equals("")){
+      tmpName = "Choose a name you murderer";
     }
     nameList.add(tmpName);
     resultList.add(top);
@@ -221,6 +230,7 @@ String getMainLayout(String tmpName) {
     Serial.println("Kind of Raw: " + resultList.get(resultList.size() - 1));
     notAdded = false;
   }
+  
   String tmp = "<html>"\
                "<title>IR-SMART-HUB</title>"\
                "<style>"\
@@ -255,11 +265,11 @@ String getMainLayout(String tmpName) {
                "<button><a href=\"addnew\">Add new IR-Signal</a></button>"\
                "</html>";
 
-  for (int i = 1; i < resultList.size(); i++) {
+  for (int i = 0; i < resultList.size(); i++) {
     String tmpCode;
     Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
     tmpCode = i;
-    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Button named:" + nameList.get(i) + "</a></p>";
+    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a></p>";
   }
 
   tmp += "</body>" \
@@ -293,6 +303,7 @@ void setupIrServer() {
   server.on("/addnew", handleNewIr);
   server.on("/save", handleSaved);
   server.on("/notsave", handleRoot);
+  server.on("/maybe", handleRoot);
   server.on("/debug", handleSave);
   server.on("/saveHandle", handleSave);
 
