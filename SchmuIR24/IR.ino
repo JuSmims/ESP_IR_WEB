@@ -3,13 +3,13 @@ void sendIrRaw(int i) {
   String tmpIRString = resultList.get(i);
   Serial.println("Nr. "+i);
   Serial.println("Sending: " + tmpIRString);
-  //counts how much parts (divided by char ',') the String str has
   Serial.println("Temp is "+(String)tmpIRString.length()+" long");
   int rawSize = 0;
+
+  
+  //counts how much parts (divided by char ',') the String str has
   for (int p = 0; p < tmpIRString.length(); p++) {
-    //Comparison wont work... UPDATE: IT WORKS.ml
     String test = (String) tmpIRString.charAt(p);
-    //Serial.println("comparison test , : "+test);
     yield();
     if (test == ",") {
       Serial.print(".");
@@ -17,17 +17,16 @@ void sendIrRaw(int i) {
     }
   }
 
-  //creates a one-dimensional field with the required length to stoer every part of the string as int-sequence
+  //creates a one-dimensional field with the required length to store every part of the string as int-sequence
   uint16_t tmpRaw[rawSize + 1];
 
-  //Fills the field with values
   Serial.println("");
   Serial.print("raw["+(String)rawSize+"] {");
   Serial.println("Rawing the array: ");
+
+  //Fills the field with values
   for (int x = 0; x < rawSize+1; x++) {
-    //tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
     tmpRaw[x] = (uint16_t) getValue(tmpIRString, ',', x).toInt();
-    //Serial.print(tmpRaw[x]+",");
     Serial.print(getValue(tmpIRString, ',', x).toInt());
     yield();
   }
