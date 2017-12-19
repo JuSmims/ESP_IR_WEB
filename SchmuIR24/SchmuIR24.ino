@@ -18,12 +18,15 @@
 
 
 const char* ssid = "Brio-2.4";
-const char* password = "xxxxx";
+const char* password = "Schliep14933387";
 
+boolean notreceived = true;
 boolean notAdded = true;
-int timeout = 200;
+boolean startedYet=false;   //A normal boolean, just for you.
+int timeout = 2000;
 
 String top;
+uint64_t topRaw;
 
 MDNSResponder mdns;
 
@@ -61,17 +64,11 @@ void handleRoot() {
 }
 
 void handleSave() {
+  unsigned long long1 = (unsigned long)((topRaw & 0xFFFF0000) >> 16 );
+  unsigned long long2 = (unsigned long)((topRaw & 0x0000FFFF));
+  String received = String(long1, HEX) + String(long2, HEX);
   Serial.println("handleSave");
-  server.send(200, "text/html", "<html>" \
-              "<head><title>SIGNAL RECEIVED</title></head>" \
-              "<body>" \
-              "<h1>You received a signal succesfully</h1>" \
-              "<form action='name'><p>Name your signal <input type='text' name='name' size=50 autofocus> <input type='submit' value='Submit'></form>"\
-              "<p><a href=\"save\">Save the received signal.</a></p>" \
-              "<p><a href=\"notsave\">Decline received signal.</a></p>" \
-              "<p><a href=\"maybe\">Maybe save?</a></p>" \
-              "</body>" \
-              "</html>");
+  server.send(200, "text/html", getSave(received));
   delay(100);
 }
 
@@ -83,16 +80,16 @@ void handleIr() {
       sendIrRaw(index);
     }
   }
-  handleRoot();
+  handleRoot();    //Making the code schmu again
 }
 
 void sendIrRaw(int i) {
   //Saves the code to send in variable
   String tmpIRString = resultList.get(i);
-  Serial.println("Nr. "+i);
+  Serial.println("Nr. " + i);         //Hello
   Serial.println("Sending: " + tmpIRString);
   //counts how much parts (divided by char ',') the String str has
-  Serial.println("Temp is "+(String)tmpIRString.length()+" long");
+  Serial.println("Temp is " + (String)tmpIRString.length() + " long");
   int rawSize = 0;
   for (int p = 0; p < tmpIRString.length(); p++) {
     //Comparison wont work... UPDATE: IT WORKS.ml
@@ -110,9 +107,9 @@ void sendIrRaw(int i) {
 
   //Fills the field with values
   Serial.println("");
-  Serial.print("raw["+(String)rawSize+"] {");
+  Serial.print("raw[" + (String)rawSize + "] {");       //random comment
   Serial.println("Rawing the array: ");
-  for (int x = 0; x < rawSize+1; x++) {
+  for (int x = 0; x < rawSize + 1; x++) {
     //tmpRaw[x] = strtoul(getValue(tmpIRString, ',', x).c_str(), NULL, 0);
     tmpRaw[x] = (uint16_t) getValue(tmpIRString, ',', x).toInt();
     //Serial.print(tmpRaw[x]+",");
@@ -128,7 +125,7 @@ void sendIrRaw(int i) {
 
 String getValue(String data, char separator, int index) {
   //a usefull method by an anonymus stackoverflow-user.
-  //It simply realises Splitter in C
+  //It simply realises Splitter in C --cool :p
   int found = 0;
   int strIndex[] = {0, -1};
   int maxIndex = data.length() - 1;
@@ -146,39 +143,40 @@ String getValue(String data, char separator, int index) {
 }
 
 void handleNewIr() {
-  Serial.println("handleNewIr");
-  server.send(200, "text/html", getIrWait());
-  boolean notreceived = true;
-  for (int i = 0; i < timeout; i++) {
-    Serial.println(".");
-    if (irrecv.decode(&results)) {
-      top = getCode(&results);
-      // print() & println() can't handle printing long longs. (uint64_t)
-      serialPrintUint64(results.value, HEX);
-      Serial.println("");
-      irrecv.resume();  // Receive the next value
-      serialPrintUint64(results.value);
-      Serial.println("");
-      Serial.println("schmu received: " + top);
-      notreceived = false;
-      Serial.println("####");
+  Serial.println(notreceived);
+   if(notreceived&&!startedYet){
+    startedYet=true;
+    Serial.println("handleNewIr");
+    server.send(200, "text/html", getIrWait());
+    for (int i = 0; i < timeout; i++) {
+      Serial.println(".");
+      if (irrecv.decode(&results)) {
+        top = getCode(&results);
+        topRaw = results.value;
+        // print() & println() can't handle printing long longs. (uint64_t)
+        serialPrintUint64(results.value, HEX);
+        Serial.println("");
+        irrecv.resume();  // Receive the next value
+        serialPrintUint64(results.value);
+        Serial.println("");
+        Serial.println("schmu received: " + top);
+        notreceived = false;
+        Serial.println("####");
+      }
+      if (!notreceived) {
+        startedYet=false;
+        break;
+      }
+      delay(10);
     }
-    if (!notreceived) {
-      break;
-    }
-    delay(100);
   }
-  if (!notreceived) {
+  else if(!notreceived) {
+    notreceived = true;
     Serial.println("handleNewIR Test1");
-    server.sendContent("<html>" \
-                       "<head><title>Received Signal</title></head>" \
-                       "<body>" \
-                       "<p><a href=\"saveHandle\">Okay!</a></p>" \
-                       "</body>" \
-                       "</html>");
+    handleSave();
   }
-  else {
-    handleRoot();
+  else{
+    Serial.println("nothing");
   }
 }
 
@@ -220,7 +218,7 @@ String getMainLayout(String tmpName) {
   }
   if (notAdded) {
     Serial.println(tmpName);
-    if (tmpName.equals("")){
+    if (tmpName.equals("")) {
       tmpName = "Choose a name you murderer";
     }
     nameList.add(tmpName);
@@ -230,7 +228,7 @@ String getMainLayout(String tmpName) {
     Serial.println("Kind of Raw: " + resultList.get(resultList.size() - 1));
     notAdded = false;
   }
-  
+
   String tmp = "<html>"\
                "<title>IR-SMART-HUB</title>"\
                "<style>"\
@@ -240,20 +238,20 @@ String getMainLayout(String tmpName) {
                "font-family: monaco, monospace;"\
                "background: url(https://media.giphy.com/media/lSzQjkthGS1gc/giphy.gif) 50%;"\
                "background-size: cover;"\
-             "}"\
+               "}"\
                "h1, h2 {"\
                "display: inline-block;"\
                "background: #fff;"\
-             "}"\
+               "}"\
                "h1 {"\
                "font-size: 30px"\
-             "}"\
+               "}"\
                "h2 {"\
                "font-size: 20px;"\
-             "}"\
+               "}"\
                "span {"\
                "background: #fd0;"\
-             "}"\
+               "}"\
                "</style>"\
                "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
                "<h2>You can send and record IR-Signals from here!</h2>"\
@@ -265,11 +263,11 @@ String getMainLayout(String tmpName) {
                "<button><a href=\"addnew\">Add new IR-Signal</a></button>"\
                "</html>";
 
-  for (int i = 0; i < resultList.size(); i++) {
+  for (int i = 1; i < resultList.size(); i++) {
     String tmpCode;
-    Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
+    Serial.println("Code for button " + nameList.get(i) + " is: " + resultList.get(i));
     tmpCode = i;
-    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a></p>";
+    tmp += "<p><a href=\"ir?code=" + tmpCode + "\"><font color=\"#ffffff\">Code " + nameList.get(i) + "</a></p>";
   }
 
   tmp += "</body>" \
@@ -305,10 +303,10 @@ void setupIrServer() {
   server.on("/notsave", handleRoot);
   server.on("/maybe", handleRoot);
   server.on("/debug", handleSave);
-  server.on("/saveHandle", handleSave);
+  //server.on("/saveHandle", handleSave);
 
-  server.on("/inline", []() {
-    server.send(200, "text/plain", "this works as well");
+  server.on("/secret", []() {
+    server.send(200, "text/plain", "secret. Please don´t tell anyone!");
   });
 
   server.onNotFound(handleRoot);
@@ -363,13 +361,50 @@ String getIrWait() {
                  "}"\
 
                  "</style>"\
-                 "<h1>Please Wait...<span> Waiting for yout IR Signal</span></h1><br>"\
+                 "<h1>Please Wait...<span> Waiting for your IR Signal</span></h1><br>"\
                  "<h2>Please send a Signal now!</h2>"\
                  "<div class=\"loader\"></div>"\
+                 "<script>"\
+                 "function reloadMe() {"\
+                 "location.reload(true);"\
+                 "}"\
+                 "setInterval(\"reloadMe()\", 1300);"\
+                 "</script>"\
                  "</html>";
   return wait;
 }
 
+String getSave(String code) {
+  String tmpSave = "<style>"\
+                   "body {"\
+                   "padding-top: 80px;"\
+                   "text-align: center;"\
+                   "font-family: monaco, monospace;"\
+                   "background: url(https://media.giphy.com/media/l3q2Cy90VMhfoA9BC/giphy.gif) 50%;"\
+                   "background-size: cover;"\
+                   "}"\
+                   "h1, h2 {"\
+                   "display: inline-block;"\
+                   "background: #fff;"\
+                   "}"\
+                   "h1 {"\
+                   "font-size: 30px"\
+                   "}"\
+                   "h2 {"\
+                   "font-size: 20px;"\
+                   "}"\
+                   "span {"\
+                   "background: #fd0;"\
+                   "}"\
+                   "</style>"\
+                   "<h1>Received a <span>Signal</span> successfully</h1><br>"\
+                   "<h2>"+code+"</h2>"\
+                   "<h2>Name your Signal!</h2>"\
+                   "<form action='name'><font color=\"#ffffff\"><p><input type='text' name='name' size=50 autofocus> <input type='submit' value='Submit'></form>"\
+                   "<p><a href=\"notsave\"><font color=\"#ffffff\">Decline received signal.</a></p>"\
+                   "<p><a href=\"maybe\"><font color=\"#ffffff\">Maybe save?</a></p>";
+  return tmpSave;
+}
 void checkSchmu() {
   String s = (String)resultList.size();
   Serial.println("Wir haben " + s + " Einträge an IR - Signals");
