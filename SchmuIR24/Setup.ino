@@ -1,17 +1,26 @@
+#include "./DNSServer.h"        
+
 void setupConn() {
   /*Sets up an AP to connect to with simple password and then set the ssid and password and connect with the network*/
-  WiFi.softAP(ssid, password);
-  if (mdns.begin("esp8266", WiFi.localIP())) {
-    Serial.println("MDNS responder started");
-  }
-  server.on("/", handleSetup);
-  //server.on("/debug2", handleDebug);
-  server.onNotFound(handleSetup);
-  Serial.println("Server gesettupped");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  //Setting up an DNS Server to make sure every request is redirected to the login screen
+  const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
+  IPAddress         apIP(10, 10, 10, 1);    // Private network for server
+  DNSServer         dnsServer;              // Create the DNS object
+  dnsServer.start(DNS_PORT, "*", apIP);     // "*" makes the DNS respond to every f*cking request
   
+  //Setting up the AP
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  WiFi.softAP("ESP_Setup");
+  
+  //Setting up the webserver to get the page
+  server.onNotFound(handleSetup);
+  Serial.println("Server gesettupped!");
+  server.begin();
+
+
   while (noData) {
+    dnsServer.processNextRequest();
     server.handleClient();
   }
 }
