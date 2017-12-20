@@ -1,3 +1,34 @@
+String getSave(String code) {
+  String tmpSave = "<style>"\
+                   "body {"\
+                   "padding-top: 80px;"\
+                   "text-align: center;"\
+                   "font-family: monaco, monospace;"\
+                   "background: url(https://media.giphy.com/media/l3q2Cy90VMhfoA9BC/giphy.gif) 50%;"\
+                   "background-size: cover;"\
+                   "}"\
+                   "h1, h2 {"\
+                   "display: inline-block;"\
+                   "background: #fff;"\
+                   "}"\
+                   "h1 {"\
+                   "font-size: 30px"\
+                   "}"\
+                   "h2 {"\
+                   "font-size: 20px;"\
+                   "}"\
+                   "span {"\
+                   "background: #fd0;"\
+                   "}"\
+                   "</style>"\
+                   "<h1>Received a <span>Signal</span> successfully</h1><br>"\
+                   "<h2>"+code+"</h2>"\
+                   "<h2>Name your Signal!</h2>"\
+                   "<form action='name'><font color=\"#ffffff\"><p><input type='text' name='name' size=50 autofocus> <input type='submit' value='Submit'></form>"\
+                   "<p><a href=\"notsave\"><font color=\"#ffffff\">Decline received signal.</a></p>"\
+                   "<p><a href=\"maybe\"><font color=\"#ffffff\">Maybe save?</a></p>";
+  return tmpSave;
+}
 
 String getIrWait() {
   String  wait = "<html>"\
@@ -19,7 +50,8 @@ String getIrWait() {
                  "h2 {"\
                  "font-size: 20px;"\
                  "}"\
-                 "span {"\
+
+    "span {"\
                  "background: #fd0;"\
                  "}"\
                  ".loader {"\
@@ -28,7 +60,8 @@ String getIrWait() {
                  "top: 50%;"\
                  "z-index: 1;"\
                  "width: 150px;"\
-                 "height: 150px;"\
+
+    "height: 150px;"\
                  "margin: -75px 0 0 -75px;"\
                  "border: 16px solid #f3f3f3;"\
                  "border-radius: 50%;"\
@@ -45,14 +78,18 @@ String getIrWait() {
                  "}"\
 
                  "</style>"\
-                 "<h1>Please Wait...<span> Waiting for yout IR Signal</span></h1><br>"\
+                 "<h1>Please Wait...<span> Waiting for your IR Signal</span></h1><br>"\
                  "<h2>Please send a Signal now!</h2>"\
                  "<div class=\"loader\"></div>"\
+                 "<script>"\
+                 "function reloadMe() {"\
+                 "location.reload(true);"\
+                 "}"\
+                 "setInterval(\"reloadMe()\", 1300);"\
+                 "</script>"\
                  "</html>";
   return wait;
 }
-
-
 String getMainLayout(String tmpName) {
   if (!tmpName.equals(nameList.get(nameList.size()))) {
     notAdded = true;
