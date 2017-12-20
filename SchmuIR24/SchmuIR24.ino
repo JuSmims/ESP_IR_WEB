@@ -16,12 +16,14 @@
 // board).
 
 
-const char* ssid = "Brio-2.4";
-const char* password = "Schliep14933387";
+const char* ssid = "ESP_Setup";
+const char* password = "";
 
 boolean notreceived = true;
 boolean notAdded = true;
 boolean startedYet=false;   //A normal boolean, just for you.
+boolean noData = true;
+
 int timeout = 2000;
 
 String top;
@@ -46,7 +48,8 @@ LinkedList<String> nameList = LinkedList<String>();
 void setup() {
   Serial.begin(9600);
   irrecv.enableIRIn();  // Start the receiver
-  setupIrServer();
+  setupConn();
+  //setupIrServer();
 }
 
 void loop() {

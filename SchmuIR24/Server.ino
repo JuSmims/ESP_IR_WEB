@@ -77,7 +77,7 @@ void handleSaved() {
   handleRoot();
 }
 
-void setupIrServer() {
+void setupIrServer(const char* ssid, const char* password) {
   irsend.begin();
   WiFi.begin(ssid, password);
   Serial.println("");

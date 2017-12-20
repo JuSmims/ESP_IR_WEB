@@ -90,6 +90,7 @@ String getIrWait() {
                  "</html>";
   return wait;
 }
+
 String getMainLayout(String tmpName) {
   if (!tmpName.equals(nameList.get(nameList.size()))) {
     notAdded = true;
@@ -142,7 +143,7 @@ String getMainLayout(String tmpName) {
                "<button><a href=\"addnew\">Add new IR-Signal</a></button>"\
                "</html>";
 
-  for (int i = 0; i < resultList.size(); i++) {
+  for (int i = 1; i < resultList.size(); i++) {
     String tmpCode;
     Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
     tmpCode = i;
@@ -154,3 +155,45 @@ String getMainLayout(String tmpName) {
 
   return tmp;
 }
+
+String getSetup(){
+  String tmp = "<html>"\
+               "<title>IR-SMART-HUB</title>"\
+               "<style>"\
+               "body {"\
+               "padding-top: 80px;"\
+               "text-align: center;"\
+               "font-family: monaco, monospace;"\
+               //"background: black 50%;"
+               //"background-size: cover;"
+             "}"\
+               "h1, h2 {"\
+               "display: inline-block;"\
+               "background: #fff;"\
+             "}"\
+               "h1 {"\
+               "font-size: 30px"\
+             "}"\
+               "h2 {"\
+               "font-size: 20px;"\
+             "}"\
+               "span {"\
+               "background: #fd0;"\
+             "}"\
+               "</style>"\
+               "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
+               "<h2>Please enter your Network Information</h2>"\
+               "<br>"\
+               "<h2>(totally secure, trust me)</h2>"\
+               "<br>"\
+               "<br>"\
+               "<form action='ssid'><font color=\"#ffffff\"><p></form>"\
+               "<form action='password'><font color=\"#ffffff\"><p>"\
+               "<input type='text' name='password' size=50 autofocus> <input type='submit' value='Submit'></form>"\
+               "<br>"\
+               "</html>"\
+               "</body>" \
+               "</html>";
+  return tmp;
+}
+
