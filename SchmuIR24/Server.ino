@@ -72,7 +72,7 @@ void handleSaved() {
   }
   nameList.add(tmpName);
   Serial.println(server.arg("name"));
-  checkSchmu();
+  log();
   resultList.add(top);
   handleRoot();
 }
