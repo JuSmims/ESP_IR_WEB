@@ -30,7 +30,6 @@ uint64_t topRaw;
 MDNSResponder mdns;
 
 ESP8266WebServer server(80);
-
 IRsend irsend(4);  // An IR LED is controlled by GPIO pin 4 (D2)
 
 uint16_t RECV_PIN = 14;
@@ -55,32 +54,6 @@ void loop() {
   server.handleClient();
 }
 
-void handleRoot() {
-  String tmpString = "No Name";
-  tmpString = server.arg("name");
-  Serial.println("Accessed Root: " + tmpString);
-  server.send(200, "text/html", getMainLayout(tmpString));
-}
-
-void handleSave() {
-  unsigned long long1 = (unsigned long)((topRaw & 0xFFFF0000) >> 16 );
-  unsigned long long2 = (unsigned long)((topRaw & 0x0000FFFF));
-  String received = String(long1, HEX) + String(long2, HEX);
-  Serial.println("handleSave");
-  server.send(200, "text/html", getSave(received));
-  delay(100);
-}
-
-void handleIr() {
-  for (uint8_t i = 0; i < server.args(); i++) {
-    if (server.argName(i) == "code") {
-      int index = strtoul(server.arg(i).c_str(), NULL, 10);
-      Serial.println(index);
-      sendIrRaw(index);
-    }
-  }
-  handleRoot();    //Making the code schmu again
-}
 
 void sendIrRaw(int i) {
   //Saves the code to send in variable
@@ -141,43 +114,7 @@ String getValue(String data, char separator, int index) {
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-void handleNewIr() {
-  Serial.println(notreceived);
-   if(notreceived&&!startedYet){
-    startedYet=true;
-    Serial.println("handleNewIr");
-    server.send(200, "text/html", getIrWait());
-    for (int i = 0; i < timeout; i++) {
-      Serial.println(".");
-      if (irrecv.decode(&results)) {
-        top = getCode(&results);
-        topRaw = results.value;
-        // print() & println() can't handle printing long longs. (uint64_t)
-        serialPrintUint64(results.value, HEX);
-        Serial.println("");
-        irrecv.resume();  // Receive the next value
-        serialPrintUint64(results.value);
-        Serial.println("");
-        Serial.println("schmu received: " + top);
-        notreceived = false;
-        Serial.println("####");
-      }
-      if (!notreceived) {
-        startedYet=false;
-        break;
-      }
-      delay(10);
-    }
-  }
-  else if(!notreceived) {
-    notreceived = true;
-    Serial.println("handleNewIR Test1");
-    handleSave();
-  }
-  else{
-    Serial.println("nothing");
-  }
-}
+
 
 String getCode(decode_results *results) {
   // turns results in a field into a String
@@ -197,18 +134,6 @@ String getCode(decode_results *results) {
   return tmpOut;
 }
 
-void handleSaved() {
-  String tmpName = server.arg("name");
-  Serial.println("handleSaved");
-  if (tmpName.equals("")) {
-    tmpName = top;
-  }
-  nameList.add(tmpName);
-  Serial.println(server.arg("name"));
-  checkSchmu();
-  resultList.add(top);
-  handleRoot();
-}
 
 String getMainLayout(String tmpName) {
   if (!tmpName.equals(nameList.get(nameList.size()))) {
@@ -302,7 +227,6 @@ void setupIrServer() {
   server.on("/notsave", handleRoot);
   server.on("/maybe", handleRoot);
   server.on("/debug", handleSave);
-  //server.on("/saveHandle", handleSave);
 
   server.on("/secret", []() {
     server.send(200, "text/plain", "secret. Please don´t tell anyone!");
@@ -334,7 +258,8 @@ String getIrWait() {
                  "h2 {"\
                  "font-size: 20px;"\
                  "}"\
-                 "span {"\
+
+    "span {"\
                  "background: #fd0;"\
                  "}"\
                  ".loader {"\
@@ -343,7 +268,8 @@ String getIrWait() {
                  "top: 50%;"\
                  "z-index: 1;"\
                  "width: 150px;"\
-                 "height: 150px;"\
+
+    "height: 150px;"\
                  "margin: -75px 0 0 -75px;"\
                  "border: 16px solid #f3f3f3;"\
                  "border-radius: 50%;"\
@@ -404,7 +330,7 @@ String getSave(String code) {
                    "<p><a href=\"maybe\"><font color=\"#ffffff\">Maybe save?</a></p>";
   return tmpSave;
 }
-void checkSchmu() {
+void log() {
   String s = (String)resultList.size();
   Serial.println("Wir haben " + s + " Einträge an IR - Signals");
   Serial.println("Der Name des letzten Elements ist : " + nameList.get(nameList.size()));
