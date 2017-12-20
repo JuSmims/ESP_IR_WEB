@@ -7,17 +7,11 @@ void handleRoot() {
 }
 
 void handleSave() {
+  unsigned long long1 = (unsigned long)((topRaw & 0xFFFF0000) >> 16 );
+  unsigned long long2 = (unsigned long)((topRaw & 0x0000FFFF));
+  String received = String(long1, HEX) + String(long2, HEX);
   Serial.println("handleSave");
-  server.send(200, "text/html", "<html>" \
-              "<head><title>SIGNAL RECEIVED</title></head>" \
-              "<body>" \
-              "<h1>You received a signal succesfully</h1>" \
-              "<form action='name'><p>Name your signal <input type='text' name='name' size=50 autofocus> <input type='submit' value='Submit'></form>"\
-              "<p><a href=\"save\">Save the received signal.</a></p>" \
-              "<p><a href=\"notsave\">Decline received signal.</a></p>" \
-              "<p><a href=\"maybe\">Maybe save?</a></p>" \
-              "</body>" \
-              "</html>");
+  server.send(200, "text/html", getSave(received));
   delay(100);
 }
 
@@ -29,48 +23,59 @@ void handleIr() {
       sendIrRaw(index);
     }
   }
+  handleRoot();    //Making the code schmu again
+}
+void handleNewIr() {
+  Serial.println(notreceived);
+   if(notreceived&&!startedYet){
+    startedYet=true;
+    Serial.println("handleNewIr");
+    server.send(200, "text/html", getIrWait());
+    for (int i = 0; i < timeout; i++) {
+      Serial.println(".");
+      if (irrecv.decode(&results)) {
+        top = getCode(&results);
+        topRaw = results.value;
+        // print() & println() can't handle printing long longs. (uint64_t)
+        serialPrintUint64(results.value, HEX);
+        Serial.println("");
+        irrecv.resume();  // Receive the next value
+        serialPrintUint64(results.value);
+        Serial.println("");
+        Serial.println("schmu received: " + top);
+        notreceived = false;
+        Serial.println("####");
+      }
+      if (!notreceived) {
+        startedYet=false;
+        break;
+      }
+      delay(10);
+    }
+  }
+  else if(!notreceived) {
+    notreceived = true;
+    Serial.println("handleNewIR Test1");
+    handleSave();
+  }
+  else{
+    Serial.println("nothing");
+  }
+}
+
+
+void handleSaved() {
+  String tmpName = server.arg("name");
+  Serial.println("handleSaved");
+  if (tmpName.equals("")) {
+    tmpName = top;
+  }
+  nameList.add(tmpName);
+  Serial.println(server.arg("name"));
+  checkSchmu();
+  resultList.add(top);
   handleRoot();
 }
-
-
-void handleNewIr() {
-  Serial.println("handleNewIr");
-  server.send(200, "text/html", getIrWait());
-  boolean notreceived = true;
-  for (int i = 0; i < timeout; i++) {
-    Serial.println(".");
-    if (irrecv.decode(&results)) {
-      top = getCode(&results);
-      // print() & println() can't handle printing long longs. (uint64_t)
-      serialPrintUint64(results.value, HEX);
-      Serial.println("");
-      irrecv.resume();  // Receive the next value
-      serialPrintUint64(results.value);
-      Serial.println("");
-      Serial.println("schmu received: " + top);
-      notreceived = false;
-      Serial.println("####");
-    }
-    if (!notreceived) {
-      break;
-    }
-    delay(100);
-  }
-  if (!notreceived) {
-    Serial.println("handleNewIR Test1");
-    server.sendContent("<html>" \
-                       "<head><title>Received Signal</title></head>" \
-                       "<body>" \
-                       "<p><a href=\"saveHandle\">Okay!</a></p>" \
-                       "</body>" \
-                       "</html>");
-  }
-  else {
-    handleRoot();
-  }
-}
-
-
 
 void setupIrServer() {
   irsend.begin();
@@ -110,18 +115,3 @@ void setupIrServer() {
   server.begin();
   Serial.println("HTTP server started");
 }
-
-
-void handleSaved() {
-  String tmpName = server.arg("name");
-  Serial.println("handleSaved");
-  if (tmpName.equals("")) {
-    tmpName = top;
-  }
-  nameList.add(tmpName);
-  Serial.println(server.arg("name"));
-  log();
-  resultList.add(top);
-  handleRoot();
-}
-
