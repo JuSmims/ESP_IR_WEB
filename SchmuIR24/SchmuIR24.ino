@@ -1,4 +1,3 @@
-
 #ifndef UNIT_TEST
 #include <Arduino.h>
 #endif
@@ -409,6 +408,4 @@ void checkSchmu() {
   String s = (String)resultList.size();
   Serial.println("Wir haben " + s + " Einträge an IR - Signals");
   Serial.println("Der Name des letzten Elements ist : " + nameList.get(nameList.size()));
-}
-
-
+  }
