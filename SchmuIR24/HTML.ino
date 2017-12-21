@@ -23,6 +23,7 @@ String getSave(String code) {
                    "</style>"\
                    "<h1>Received a <span>Signal</span> successfully</h1><br>"\
                    "<h2>"+code+"</h2>"\
+                   "<br>"\
                    "<h2>Name your Signal!</h2>"\
                    "<form action='name'><font color=\"#ffffff\"><p><input type='text' name='name' size=50 autofocus> <input type='submit' value='Submit'></form>"\
                    "<p><a href=\"notsave\"><font color=\"#ffffff\">Decline received signal.</a></p>"\
@@ -164,9 +165,8 @@ String getSetup(){
                "padding-top: 80px;"\
                "text-align: center;"\
                "font-family: monaco, monospace;"\
-               //"background: black 50%;"
-               //"background-size: cover;"
-             "}"\
+               "background-color: coral;"\
+               "}"\
                "h1, h2 {"\
                "display: inline-block;"\
                "background: #fff;"\
@@ -187,9 +187,13 @@ String getSetup(){
                "<h2>(totally secure, trust me)</h2>"\
                "<br>"\
                "<br>"\
-               "<form action='ssid'><font color=\"#ffffff\"><p></form>"\
-               "<form action='password'><font color=\"#ffffff\"><p>"\
-               "<input type='text' name='password' size=50 autofocus> <input type='submit' value='Submit'></form>"\
+               "<form action=\"/\">"\
+               "SSID:<br>"\
+               "<input type=\"text\" name=\"ssid\"><br>"\
+               "Password:<br>"\
+               "<input type=\"password\" name=\"password\"><br><br>"\
+               "<input type=\"submit\" value=\"Submit\">"\
+               "</form>"\
                "<br>"\
                "</html>"\
                "</body>" \

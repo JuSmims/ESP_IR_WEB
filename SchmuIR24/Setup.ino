@@ -11,13 +11,16 @@ void setupConn() {
   //Setting up the AP
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  WiFi.softAP("ESP_Setup");
+  WiFi.softAP("IR-HUB_Setup");
   
   //Setting up the webserver to get the page
-  server.onNotFound(handleSetup);
+  server.on("/", handleSetup);
+  server.on("/setup",handleSetup);
   Serial.println("Server gesettupped!");
+  if(!serverNotNotOn){
+  serverNotNotOn = true;
   server.begin();
-
+  }
 
   while (noData) {
     dnsServer.processNextRequest();
@@ -25,22 +28,25 @@ void setupConn() {
   }
 }
 
+/*void handleRootSetup(){
+  server.send(200, "text/html", "<p><a href=\"setup\">Start Setup</a></p>");
+}*/
+
 void handleSetup(){
   Serial.println("Client requested website");
-  for (uint8_t i = 0; i < server.args(); i++) {
-    if (server.argName(i) == "ssid") {
-      const char* ssid = server.arg(i).c_str();
-      Serial.println(ssid);
-    }
-    else if(server.argName(i) == "password"){
-      const char* password = server.arg(i).c_str();
-      Serial.println(password);
-      }
+  String password;
+  String ssid;
+  if(server.args()>1){
+  password = server.arg("password");
+  ssid = server.arg("ssid");
+  Serial.println(ssid);
+  Serial.println(password);
   }
-  if(ssid!="ESP_Setup"){
-    setupIrServer(ssid, password);
-    noData=false;
+  if(ssid!="" && password!="" ){
     Serial.println("leaving the setup");
+    WiFi.softAPdisconnect(true);
+    setupIrServer(ssid.c_str(), password.c_str());
+    noData=false;
   }
   server.send(200, "text/html", getSetup());
 }

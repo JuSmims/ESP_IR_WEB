@@ -83,8 +83,18 @@ void setupIrServer(const char* ssid, const char* password) {
   Serial.println("");
 
   // Wait for connection
+  int timeoutConnect = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
+    timeoutConnect++;
+    if(timeoutConnect == 20){
+      noData=true;
+      timeoutConnect = 0;
+      setupConn();
+      ESP.reset();
+      ESP.restart();
+      break;
+    }
     Serial.print(".");
   }
   Serial.println("");

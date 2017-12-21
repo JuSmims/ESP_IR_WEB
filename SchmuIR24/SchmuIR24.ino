@@ -16,14 +16,14 @@
 // board).
 
 
-const char* ssid = "ESP_Setup";
-const char* password = "";
+//const char* ssid = "IR-Hub_Setup";
+//const char* password = "";
 
 boolean notreceived = true;
 boolean notAdded = true;
 boolean startedYet=false;   //A normal boolean, just for you.
 boolean noData = true;
-
+boolean serverNotNotOn = false;
 int timeout = 2000;
 
 String top;
