@@ -37,8 +37,8 @@ void handleSetup(){
   String password;
   String ssid;
   if(setupServer.args()>1){
-  password = server.arg("password");
-  ssid = server.arg("ssid");
+  password = setupServer.arg("password");
+  ssid = setupServer.arg("ssid");
   Serial.println(ssid);
   Serial.println(password);
   }
