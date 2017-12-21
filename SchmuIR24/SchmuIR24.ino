@@ -31,7 +31,8 @@ uint64_t topRaw;
 
 MDNSResponder mdns;
 
-ESP8266WebServer server(80);
+ESP8266WebServer setupServer(80);
+ESP8266WebServer mainServer(80);
 IRsend irsend(4);  // An IR LED is controlled by GPIO pin 4 (D2)
 
 uint16_t RECV_PIN = 14;
@@ -53,7 +54,7 @@ void setup() {
 }
 
 void loop() {
-  server.handleClient();
+  mainServer.handleClient();
 }
 void log() {
   String s = (String)resultList.size();

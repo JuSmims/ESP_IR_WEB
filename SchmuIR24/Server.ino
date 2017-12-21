@@ -30,7 +30,7 @@ void handleNewIr() {
    if(notreceived&&!startedYet){
     startedYet=true;
     Serial.println("handleNewIr");
-    server.send(200, "text/html", getIrWait());
+    mainServer.send(200, "text/html", getIrWait());
     for (int i = 0; i < timeout; i++) {
       Serial.println(".");
       if (irrecv.decode(&results)) {
@@ -65,13 +65,13 @@ void handleNewIr() {
 
 
 void handleSaved() {
-  String tmpName = server.arg("name");
+  String tmpName = mainServer.arg("name");
   Serial.println("handleSaved");
   if (tmpName.equals("")) {
     tmpName = top;
   }
   nameList.add(tmpName);
-  Serial.println(server.arg("name"));
+  Serial.println(mainServer.arg("name"));
   log();
   resultList.add(top);
   handleRoot();
@@ -107,21 +107,21 @@ void setupIrServer(const char* ssid, const char* password) {
     Serial.println("MDNS responder started");
   }
 
-  server.on("/", handleRoot);
-  server.on("/ir", handleIr);
-  server.on("/addnew", handleNewIr);
-  server.on("/save", handleSaved);
-  server.on("/notsave", handleRoot);
-  server.on("/maybe", handleRoot);
-  server.on("/debug", handleSave);
-  server.on("/saveHandle", handleSave);
+  mainServer.on("/", handleRoot);
+  mainServer.on("/ir", handleIr);
+  mainServer.on("/addnew", handleNewIr);
+  mainServer.on("/save", handleSaved);
+  mainServer.on("/notsave", handleRoot);
+  mainServer.on("/maybe", handleRoot);
+  mainServer.on("/debug", handleSave);
+  mainServer.on("/saveHandle", handleSave);
 
-  server.on("/inline", []() {
-    server.send(200, "text/plain", "this works as well");
+  mainServer.on("/inline", []() {
+    mainServer.send(200, "text/plain", "this works as well");
   });
 
-  server.onNotFound(handleRoot);
+  mainServer.onNotFound(handleRoot);
 
-  server.begin();
+  mainServer.begin();
   Serial.println("HTTP server started");
 }

@@ -14,17 +14,17 @@ void setupConn() {
   WiFi.softAP("IR-HUB_Setup");
   
   //Setting up the webserver to get the page
-  server.on("/", handleSetup);
-  server.on("/setup",handleSetup);
+  setupServer.on("/", handleSetup);
+  setupServer.on("/setup",handleSetup);
   Serial.println("Server gesettupped!");
   if(!serverNotNotOn){
   serverNotNotOn = true;
-  server.begin();
+  setupServer.begin();
   }
 
   while (noData) {
     dnsServer.processNextRequest();
-    server.handleClient();
+    setupServer.handleClient();
   }
 }
 
@@ -36,7 +36,7 @@ void handleSetup(){
   Serial.println("Client requested website");
   String password;
   String ssid;
-  if(server.args()>1){
+  if(setupServer.args()>1){
   password = server.arg("password");
   ssid = server.arg("ssid");
   Serial.println(ssid);
@@ -48,6 +48,6 @@ void handleSetup(){
     setupIrServer(ssid.c_str(), password.c_str());
     noData=false;
   }
-  server.send(200, "text/html", getSetup());
+  setupServer.send(200, "text/html", getSetup());
 }
 
