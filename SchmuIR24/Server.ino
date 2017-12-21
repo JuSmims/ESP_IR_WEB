@@ -1,9 +1,9 @@
 
 void handleRoot() {
   String tmpString = "No Name";
-  tmpString = server.arg("name");
+  tmpString = mainServer.arg("name");
   Serial.println("Accessed Root: " + tmpString);
-  server.send(200, "text/html", getMainLayout(tmpString));
+  mainServer.send(200, "text/html", getMainLayout(tmpString));
 }
 
 void handleSave() {
@@ -11,7 +11,7 @@ void handleSave() {
   unsigned long long2 = (unsigned long)((topRaw & 0x0000FFFF));
   String received = String(long1, HEX) + String(long2, HEX);
   Serial.println("handleSave");
-  server.send(200, "text/html", getSave(received));
+  mainServer.send(200, "text/html", getSave(received));
   delay(100);
 }
 
