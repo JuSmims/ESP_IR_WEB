@@ -26,6 +26,7 @@ void setupConn() {
     dnsServer.processNextRequest();
     setupServer.handleClient();
   }
+  Serial.println("noData: "+noData);
 }
 
 /*void handleRootSetup(){

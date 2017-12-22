@@ -16,13 +16,14 @@ void handleSave() {
 }
 
 void handleIr() {
-  for (uint8_t i = 0; i < mainServer.args(); i++) {
-    if (mainServer.argName(i) == "code") {
-      int index = strtoul(mainServer.arg(i).c_str(), NULL, 10);
+  //for (uint8_t i = 0; i < mainServer.args(); i++) {
+    //if (mainServer.argName(i) == "code") {
+      //int index = strtoul(mainServer.arg(i).c_str(), NULL, 10);
+      int index = strtoul(mainServer.arg("code").c_str(),NULL,10);
       Serial.println(index);
       sendIrRaw(index);
-    }
-  }
+    //}
+  //}
   handleRoot();    //Making the code schmu again
 }
 void handleNewIr() {
