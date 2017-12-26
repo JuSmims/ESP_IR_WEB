@@ -1,11 +1,11 @@
 #include "./DNSServer.h"        
-
+DNSServer         dnsServer;              // Create the DNS object
+  
 void setupConn() {
   /*Sets up an AP to connect to with simple password and then set the ssid and password and connect with the network*/
   //Setting up an DNS Server to make sure every request is redirected to the login screen
   const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
   IPAddress         apIP(10, 10, 10, 1);    // Private network for server
-  DNSServer         dnsServer;              // Create the DNS object
   dnsServer.start(DNS_PORT, "*", apIP);     // "*" makes the DNS respond to every f*cking request
   
   //Setting up the AP
@@ -29,10 +29,6 @@ void setupConn() {
   Serial.println("noData: "+noData);
 }
 
-/*void handleRootSetup(){
-  server.send(200, "text/html", "<p><a href=\"setup\">Start Setup</a></p>");
-}*/
-
 void handleSetup(){
   Serial.println("Client requested website");
   String password;
@@ -46,6 +42,8 @@ void handleSetup(){
   if(ssid!="" && password!="" ){
     Serial.println("leaving the setup");
     WiFi.softAPdisconnect(true);
+    dnsServer.stop();
+    setupServer.stop();
     setupIrServer(ssid.c_str(), password.c_str());
     noData=false;
   }
