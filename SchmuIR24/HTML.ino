@@ -148,7 +148,7 @@ String getMainLayout(String tmpName) {
     String tmpCode;
     Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
     tmpCode = i;
-    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a></p>";
+    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a><span><a href=\"delete?code=" + tmpCode + "\"> Delete</a></p>";
   }
 
   tmp += "</body>" \
@@ -156,7 +156,44 @@ String getMainLayout(String tmpName) {
 
   return tmp;
 }
-
+String getIRDeletion(String indexToDelete){
+    String tmp = "<html>"\
+               "<title>IR-SMART-HUB</title>"\
+               "<style>"\
+               "body {"\
+               "padding-top: 80px;"\
+               "text-align: center;"\
+               "font-family: monaco, monospace;"\
+               "background-color: coral;"\
+               "}"\
+               "h1, h2 {"\
+               "display: inline-block;"\
+               "background: #fff;"\
+             "}"\
+               "h1 {"\
+               "font-size: 30px"\
+             "}"\
+               "h2 {"\
+               "font-size: 20px;"\
+             "}"\
+               "span {"\
+               "background: #fd0;"\
+             "}"\
+               "</style>"\
+               "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
+               "<h2>Are you sure you want to delete ?</h2>"\
+               "<br>"\
+               "<br>"\
+               "<br>"\
+               "<p><a href=\"ydelete?code="+indexToDelete+"\">Yes </a></p>"\
+               "<p><a href=\"handleRoot\">No </a></p>"\
+               "<br>"\
+               "</html>"\
+               "</body>" \
+               "</html>";
+   return tmp;
+  }
+  
 String getSetup(){
   String tmp = "<html>"\
                "<title>IR-SMART-HUB</title>"\

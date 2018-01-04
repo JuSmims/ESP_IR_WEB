@@ -64,6 +64,17 @@ void handleNewIr() {
   }
 }
 
+void handleDeletion(){
+  String indexToDelete = mainServer.arg("code").c_str();
+  mainServer.send(200, "text/html", getIRDeletion(indexToDelete));
+}
+
+void handleDeleted(){
+    int indexToDelete = strtoul(mainServer.arg("code").c_str(),NULL,10);
+    nameList.remove(indexToDelete);
+    resultList.remove(indexToDelete);
+    handleRoot();
+}
 
 void handleSaved() {
   String tmpName = mainServer.arg("name");
@@ -116,6 +127,8 @@ void setupIrServer(const char* ssid, const char* password) {
   mainServer.on("/maybe", handleRoot);
   mainServer.on("/debug", handleSave);
   mainServer.on("/saveHandle", handleSave);
+  mainServer.on("/delete", handleDeletion);
+  mainServer.on("/ydelete", handleDeleted);
 
   mainServer.on("/inline", []() {
     mainServer.send(200, "text/plain", "this works as well");
