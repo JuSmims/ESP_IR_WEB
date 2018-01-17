@@ -194,7 +194,7 @@ String getIRDeletion(String indexToDelete){
    return tmp;
   }
   
-String getSetup(){
+String getSetup(String ssid){
   String tmp = "<html>"\
                "<title>IR-SMART-HUB</title>"\
                "<style>"\
@@ -230,6 +230,9 @@ String getSetup(){
                "Password:<br>"\
                "<input type=\"password\" name=\"password\"><br><br>"\
                "<input type=\"submit\" value=\"Submit\">"\
+               "<br>"\
+               "<p>Rember: "+ssid+"</p>"\
+               "<p><a href=\"remember\">Remember</a></p>"\
                "</form>"\
                "<br>"\
                "</html>"\
@@ -237,4 +240,5 @@ String getSetup(){
                "</html>";
   return tmp;
 }
+
 
