@@ -33,6 +33,7 @@ void handleSetup(){
   Serial.println("Client requested website");
   String password;
   String ssid;
+  String ip;
   if(setupServer.args()>1){
   password = setupServer.arg("password");
   ssid = setupServer.arg("ssid");
@@ -44,7 +45,7 @@ void handleSetup(){
     WiFi.softAPdisconnect(true);
     dnsServer.stop();
     setupServer.stop();
-    setupIrServer(ssid.c_str(), password.c_str());
+    setupIrServer(ssid.c_str(), password.c_str(),ip);
     noData=false;
   }
   setupServer.send(200, "text/html", getSetup());

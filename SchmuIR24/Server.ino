@@ -89,11 +89,24 @@ void handleSaved() {
   handleRoot();
 }
 
-void setupIrServer(const char* ssid, const char* password) {
+void setupIrServer(const char* ssid, const char* password,String ip) {
   irsend.begin();
   WiFi.begin(ssid, password);
   Serial.println("");
 
+  //Checking if there is any configured ip, if not it does nothing
+  if(ip!=""){
+    //Turns the parameter String into a very Top IP-adress 
+    int tmp[4];
+    for(int i=0;i<4;i++){
+      tmp[i]= getValue(ip,'.',i).toInt();
+      }
+    IPAddress ip(tmp[0], tmp[1], tmp[2], tmp[3]);
+
+    //configures the WiFi IP-adress(somehow the ESP8266 Wifi - class doesn't support empty subnet or gateway parameters so hopefully it works with the already existing local variables) 
+    WiFi.config(ip, WiFi.gatewayIP (),WiFi.subnetMask());
+ }
+  
   // Wait for connection
   int timeoutConnect = 0;
   while (WiFi.status() != WL_CONNECTED) {

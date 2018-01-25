@@ -229,6 +229,8 @@ String getSetup(){
                "<input type=\"text\" name=\"ssid\"><br>"\
                "Password:<br>"\
                "<input type=\"password\" name=\"password\"><br><br>"\
+               "IP-Address:<br>"\
+               "<input type=\"ip\" name=\"ip\"><br><br>"\
                "<input type=\"submit\" value=\"Submit\">"\
                "</form>"\
                "<br>"\
