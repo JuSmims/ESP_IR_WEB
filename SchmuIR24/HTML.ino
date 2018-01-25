@@ -148,7 +148,7 @@ String getMainLayout(String tmpName) {
     String tmpCode;
     Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
     tmpCode = i;
-    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a><span><a href=\"delete?code=" + tmpCode + "\"> Delete</a></p>";
+    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a>&nbsp <a href=\"delete?code=" + tmpCode + "\"><img align=\"bottom\" height=20px width=19px src=\"C:\\Users\\AronNikolai.Schliep\\Downloads\\bingewesen.png\"/></a></p>";
   }
 
   tmp += "</body>" \
@@ -194,7 +194,7 @@ String getIRDeletion(String indexToDelete){
    return tmp;
   }
   
-String getSetup(){
+String getSetup(String ssid){
   String tmp = "<html>"\
                "<title>IR-SMART-HUB</title>"\
                "<style>"\
@@ -232,6 +232,7 @@ String getSetup(){
                "IP-Address:<br>"\
                "<input type=\"ip\" name=\"ip\"><br><br>"\
                "<input type=\"submit\" value=\"Submit\">"\
+               "<br>"\
                "</form>"\
                "<br>"\
                "</html>"\
@@ -240,3 +241,5 @@ String getSetup(){
   return tmp;
 }
 
+
+//TODO: HTML Effizienz, Kompetenz, Versagen.

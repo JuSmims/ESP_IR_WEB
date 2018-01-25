@@ -17,19 +17,19 @@ void handleSave() {
 
 void handleIr() {
   //for (uint8_t i = 0; i < mainServer.args(); i++) {
-    //if (mainServer.argName(i) == "code") {
-      //int index = strtoul(mainServer.arg(i).c_str(), NULL, 10);
-      int index = strtoul(mainServer.arg("code").c_str(),NULL,10);
-      Serial.println(index);
-      sendIrRaw(index);
-    //}
+  //if (mainServer.argName(i) == "code") {
+  //int index = strtoul(mainServer.arg(i).c_str(), NULL, 10);
+  int index = strtoul(mainServer.arg("code").c_str(), NULL, 10);
+  Serial.println(index);
+  sendIrRaw(index);
+  //}
   //}
   handleRoot();    //Making the code schmu again
 }
 void handleNewIr() {
   Serial.println(notreceived);
-   if(notreceived&&!startedYet){
-    startedYet=true;
+  if (notreceived && !startedYet) {
+    startedYet = true;
     Serial.println("handleNewIr");
     mainServer.send(200, "text/html", getIrWait());
     for (int i = 0; i < timeout; i++) {
@@ -48,32 +48,32 @@ void handleNewIr() {
         Serial.println("####");
       }
       if (!notreceived) {
-        startedYet=false;
+        startedYet = false;
         break;
       }
       delay(10);
     }
   }
-  else if(!notreceived) {
+  else if (!notreceived) {
     notreceived = true;
     Serial.println("handleNewIR Test1");
     handleSave();
   }
-  else{
+  else {
     Serial.println("nothing");
   }
 }
 
-void handleDeletion(){
+void handleDeletion() {
   String indexToDelete = mainServer.arg("code").c_str();
   mainServer.send(200, "text/html", getIRDeletion(indexToDelete));
 }
 
-void handleDeleted(){
-    int indexToDelete = strtoul(mainServer.arg("code").c_str(),NULL,10);
-    nameList.remove(indexToDelete);
-    resultList.remove(indexToDelete);
-    handleRoot();
+void handleDeleted() {
+  int indexToDelete = strtoul(mainServer.arg("code").c_str(), NULL, 10);
+  nameList.remove(indexToDelete);
+  resultList.remove(indexToDelete);
+  handleRoot();
 }
 
 void handleSaved() {
@@ -112,12 +112,16 @@ void setupIrServer(const char* ssid, const char* password,String ip) {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     timeoutConnect++;
-    if(timeoutConnect == 20){
-      noData=true;
+    if (timeoutConnect == 20) {
+      noData = true;
       timeoutConnect = 0;
-      setupConn();
+      for (int i = 0; i < 128; i++) {
+        EEPROM.write(i, 0xFF);
+        Serial.print(EEPROM.read(i));
+        EEPROM.commit();
+      }
+      Serial.println("");
       ESP.reset();
-      ESP.restart();
       break;
     }
     Serial.print(".");

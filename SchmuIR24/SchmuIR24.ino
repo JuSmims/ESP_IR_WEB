@@ -11,6 +11,7 @@
 #include <IRutils.h>
 #include <LinkedList.h>
 //#include <boost/lexical_cast.hpp>
+#include <EEPROM.h>
 
 // An IR detector/demodulator is connected to GPIO pin 14(D5 on a NodeMCU
 // board).
@@ -48,6 +49,7 @@ LinkedList<String> nameList = LinkedList<String>();
 
 void setup() {
   Serial.begin(9600);
+  EEPROM.begin(128);
   irrecv.enableIRIn();  // Start the receiver
   setupConn();
   //setupIrServer();
