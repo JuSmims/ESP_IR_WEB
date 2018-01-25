@@ -8,9 +8,6 @@ String ssid;
 boolean remember = false;
 
 void setupConn() {
-
-  //Starts EEPROM to save ssid and password.
-  EEPROM.begin(128);
   
   for(int i=0; i<64; i++){
     char c = EEPROM.read(i);
@@ -18,7 +15,7 @@ void setupConn() {
       ssid += c;
     }
   }
-  Serial.println(ssid);
+  //Serial.println(ssid);
 
   for(int i=64; i<128; i++){
     char c = EEPROM.read(i);
@@ -27,7 +24,6 @@ void setupConn() {
     }
   }
   Serial.println("SSID: "+ssid+" Password: "+password);
-  
   /*Sets up an AP to connect to with simple password and then set the ssid and password and connect with the network*/
   //Setting up an DNS Server to make sure every request is redirected to the login screen
   const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
@@ -49,12 +45,17 @@ void setupConn() {
     serverNotNotOn = true;
     setupServer.begin();
   }
-
+  if(password != "" && ssid !=""){
+    handleRemember();
+    noData = false;
+  }
   while (noData) {
     dnsServer.processNextRequest();
     setupServer.handleClient();
   }
   Serial.println("noData: "+noData);
+  
+  
 }
 
 void handleRemember(){
@@ -123,5 +124,4 @@ void saveLogin(String id, String pass){
   Serial.println("##############################################");
   EEPROM.commit();
 }
-
 

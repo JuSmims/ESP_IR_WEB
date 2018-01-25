@@ -148,7 +148,7 @@ String getMainLayout(String tmpName) {
     String tmpCode;
     Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
     tmpCode = i;
-    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a><span><a href=\"delete?code=" + tmpCode + "\"> Delete</a></p>";
+    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a>&nbsp <a href=\"delete?code=" + tmpCode + "\"><img align=\"bottom\" height=20px width=19px src=\"C:\\Users\\AronNikolai.Schliep\\Downloads\\bingewesen.png\"/></a></p>";
   }
 
   tmp += "</body>" \
@@ -231,8 +231,6 @@ String getSetup(String ssid){
                "<input type=\"password\" name=\"password\"><br><br>"\
                "<input type=\"submit\" value=\"Submit\">"\
                "<br>"\
-               "<p>Rember: "+ssid+"</p>"\
-               "<p><a href=\"remember\">Remember</a></p>"\
                "</form>"\
                "<br>"\
                "</html>"\
@@ -242,3 +240,4 @@ String getSetup(String ssid){
 }
 
 
+//TODO: HTML Effizienz, Kompetenz, Versagen.
