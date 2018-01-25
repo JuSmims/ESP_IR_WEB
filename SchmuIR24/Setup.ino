@@ -65,8 +65,10 @@ void handleRemember(){
 
 void handleSetup(){
   Serial.println("Client requested website");
+  String ip;
   String pass;
   String id;
+  
   if(setupServer.args()>1){
   pass = setupServer.arg("password");
   id = setupServer.arg("ssid");
@@ -79,9 +81,10 @@ void handleSetup(){
     WiFi.softAPdisconnect(true);
     dnsServer.stop();
     setupServer.stop();
-    setupIrServer(id.c_str(), pass.c_str());
+    setupIrServer(ssid.c_str(), password.c_str(),ip);
     noData=false;
   }
+  
   if(remember){
     Serial.println("leaving the setup, i remembered.");
     WiFi.softAPdisconnect(true);
