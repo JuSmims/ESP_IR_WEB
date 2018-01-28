@@ -23,7 +23,9 @@ void setupConn() {
       password += c;
     }
   }
+  
   Serial.println("SSID: "+ssid+" Password: "+password);
+  
   /*Sets up an AP to connect to with simple password and then set the ssid and password and connect with the network*/
   //Setting up an DNS Server to make sure every request is redirected to the login screen
   const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
@@ -40,22 +42,17 @@ void setupConn() {
   setupServer.on("/setup",handleSetup);
   setupServer.on("/remember", handleRemember);
   Serial.println("Server gesettupped!");
+  setupServer.begin();
   
-  if(!serverNotNotOn){
-    serverNotNotOn = true;
-    setupServer.begin();
-  }
   if(password != "" && ssid !=""){
     handleRemember();
     noData = false;
   }
+  
   while (noData) {
     dnsServer.processNextRequest();
     setupServer.handleClient();
   }
-  Serial.println("noData: "+noData);
-  
-  
 }
 
 void handleRemember(){
@@ -72,8 +69,10 @@ void handleSetup(){
   if(setupServer.args()>1){
   pass = setupServer.arg("password");
   id = setupServer.arg("ssid");
+  ip= setupServer.arg("ip");
   Serial.println(id);
   Serial.println(pass);
+  Serial.println(ip);
   }
   if(id!="" && pass!="" ){
     saveLogin(id, pass);
@@ -90,7 +89,7 @@ void handleSetup(){
     WiFi.softAPdisconnect(true);
     dnsServer.stop();
     setupServer.stop();
-    setupIrServer(ssid.c_str(), password.c_str());
+    setupIrServer(ssid.c_str(), password.c_str(),"");
     noData=false;
     remember=false;
   }
@@ -98,33 +97,25 @@ void handleSetup(){
 }
 
 void saveLogin(String id, String pass){
-  Serial.println("id: "+id+ " pass: "+pass); 
-  Serial.println("##############################################");
+  
+  //saves id:
   for(int i=0; i<64; i++){
     if(id.length()>i){
       EEPROM.write(i, id.charAt(i));
-      Serial.print((char)EEPROM.read(i));
     }
     else{
       EEPROM.write(i,  0xFF);
-      Serial.print((char)EEPROM.read(i));
     }
   }
-  Serial.println("");
-  Serial.println(id);
-    for(int i=64; i<128; i++){
+
+  for(int i=64; i<128; i++){
     if(pass.length()>i-64){
       EEPROM.write(i, pass.charAt(i-64));
-      Serial.print((char)EEPROM.read(i));
     }
     else{
       EEPROM.write(i,  0xFF);
-      Serial.print((char)EEPROM.read(i));
     }
   }
-  Serial.println("");
-  Serial.println(pass);
-  Serial.println("##############################################");
   EEPROM.commit();
 }
 

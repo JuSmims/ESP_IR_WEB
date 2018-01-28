@@ -16,15 +16,10 @@
 // An IR detector/demodulator is connected to GPIO pin 14(D5 on a NodeMCU
 // board).
 
-
-//const char* ssid = "IR-Hub_Setup";
-//const char* password = "";
-
 boolean notreceived = true;
 boolean notAdded = true;
 boolean startedYet=false;   //A normal boolean, just for you.
 boolean noData = true;
-boolean serverNotNotOn = false;
 int timeout = 2000;
 
 String top;
@@ -52,14 +47,14 @@ void setup() {
   EEPROM.begin(128);
   irrecv.enableIRIn();  // Start the receiver
   setupConn();
-  //setupIrServer();
 }
 
 void loop() {
   mainServer.handleClient();
 }
+
 void log() {
   String s = (String)resultList.size();
   Serial.println("Wir haben " + s + " Einträge an IR - Signals");
   Serial.println("Der Name des letzten Elements ist : " + nameList.get(nameList.size()));
-  }
+}
