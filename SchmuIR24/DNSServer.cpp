@@ -135,21 +135,6 @@ void DNSServer::replyWithIP()
   _udp.write((uint8_t)4);
   _udp.write(_resolvedIP, sizeof(_resolvedIP));
   _udp.endPacket();
-
-
-
-  #ifdef DEBUG
-    DEBUG_OUTPUT.print("DNS responds: ");
-    DEBUG_OUTPUT.print(_resolvedIP[0]);
-    DEBUG_OUTPUT.print(".");
-    DEBUG_OUTPUT.print(_resolvedIP[1]);
-    DEBUG_OUTPUT.print(".");
-    DEBUG_OUTPUT.print(_resolvedIP[2]);
-    DEBUG_OUTPUT.print(".");
-    DEBUG_OUTPUT.print(_resolvedIP[3]);
-    DEBUG_OUTPUT.print(" for ");
-    DEBUG_OUTPUT.println(getDomainNameWithoutWwwPrefix());
-  #endif
 }
 
 void DNSServer::replyWithCustomCode()

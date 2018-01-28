@@ -90,10 +90,7 @@ void handleSaved() {
 }
 
 void setupIrServer(const char* ssid, const char* password,String ip) {
-  irsend.begin();
-  WiFi.begin(ssid, password);
-  Serial.println("");
-
+  
   //Checking if there is any configured ip, if not it does nothing
   if(ip!=""){
     //Turns the parameter String into a very Top IP-adress 
@@ -105,7 +102,12 @@ void setupIrServer(const char* ssid, const char* password,String ip) {
 
     //configures the WiFi IP-adress(somehow the ESP8266 Wifi - class doesn't support empty subnet or gateway parameters so hopefully it works with the already existing local variables) 
     WiFi.config(ip, WiFi.gatewayIP (),WiFi.subnetMask());
+    Serial.println("Personalised IP:"+ ip);
  }
+ 
+  irsend.begin();
+  WiFi.begin(ssid, password);
+  Serial.println("");
   
   // Wait for connection
   int timeoutConnect = 0;
@@ -117,15 +119,15 @@ void setupIrServer(const char* ssid, const char* password,String ip) {
       timeoutConnect = 0;
       for (int i = 0; i < 128; i++) {
         EEPROM.write(i, 0xFF);
-        Serial.print(EEPROM.read(i));
         EEPROM.commit();
       }
-      Serial.println("");
+      Serial.println("No connection, please retry");
       ESP.reset();
       break;
     }
     Serial.print(".");
   }
+  
   Serial.println("");
   Serial.print("Connected to ");
   Serial.println(ssid);
