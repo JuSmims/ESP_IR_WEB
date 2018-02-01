@@ -47,7 +47,7 @@ void handleNewIr() {
         notreceived = false;
         Serial.println("####");
       }
-      if (!notreceived) {
+      if (!notreceived || i< timeout-1) {
         startedYet = false;
         break;
       }
@@ -100,9 +100,11 @@ void setupIrServer(const char* ssid, const char* password,String ip) {
       }
     IPAddress ip(tmp[0], tmp[1], tmp[2], tmp[3]);
 
-    //configures the WiFi IP-adress(somehow the ESP8266 Wifi - class doesn't support empty subnet or gateway parameters so hopefully it works with the already existing local variables) 
+    //configures the WiFi IP-adress(somehow the ESP8266 Wifi - class doesn't support empty subnet or gateway parameters so hopefully it works with the already existing local variables)
+    WiFi.mode(WIFI_STA);
+    WiFi.hostname("Your greates IOT Device. Trust me."); 
     WiFi.config(ip, WiFi.gatewayIP (),WiFi.subnetMask());
-    Serial.println("Personalised IP:"+ ip);
+    Serial.println("Personalized IP:"+ ip);
  }
  
   irsend.begin();
@@ -149,8 +151,8 @@ void setupIrServer(const char* ssid, const char* password,String ip) {
   mainServer.on("/delete", handleDeletion);
   mainServer.on("/ydelete", handleDeleted);
 
-  mainServer.on("/inline", []() {
-    mainServer.send(200, "text/plain", "this works as well");
+  mainServer.on("/shit", []() {
+    mainServer.send(200, "text/plain", "pls help.");
   });
 
   mainServer.onNotFound(handleRoot);
