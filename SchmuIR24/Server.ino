@@ -47,7 +47,7 @@ void handleNewIr() {
         notreceived = false;
         Serial.println("####");
       }
-      if (!notreceived || i< timeout-1) {
+      if (!notreceived) {
         startedYet = false;
         break;
       }
@@ -89,28 +89,11 @@ void handleSaved() {
   handleRoot();
 }
 
-void setupIrServer(const char* ssid, const char* password,String ip) {
-  
-  //Checking if there is any configured ip, if not it does nothing
-  if(ip!=""){
-    //Turns the parameter String into a very Top IP-adress 
-    int tmp[4];
-    for(int i=0;i<4;i++){
-      tmp[i]= getValue(ip,'.',i).toInt();
-      }
-    IPAddress ip(tmp[0], tmp[1], tmp[2], tmp[3]);
-
-    //configures the WiFi IP-adress(somehow the ESP8266 Wifi - class doesn't support empty subnet or gateway parameters so hopefully it works with the already existing local variables)
-    WiFi.mode(WIFI_STA);
-    WiFi.hostname("Your greates IOT Device. Trust me."); 
-    WiFi.config(ip, WiFi.gatewayIP (),WiFi.subnetMask());
-    Serial.println("Personalized IP:"+ ip);
- }
- 
+void setupIrServer(const char* ssid, const char* password) {
   irsend.begin();
   WiFi.begin(ssid, password);
   Serial.println("");
-  
+
   // Wait for connection
   int timeoutConnect = 0;
   while (WiFi.status() != WL_CONNECTED) {
@@ -121,15 +104,15 @@ void setupIrServer(const char* ssid, const char* password,String ip) {
       timeoutConnect = 0;
       for (int i = 0; i < 128; i++) {
         EEPROM.write(i, 0xFF);
+        Serial.print(EEPROM.read(i));
         EEPROM.commit();
       }
-      Serial.println("No connection, please retry");
+      Serial.println("");
       ESP.reset();
       break;
     }
     Serial.print(".");
   }
-  
   Serial.println("");
   Serial.print("Connected to ");
   Serial.println(ssid);
@@ -151,8 +134,8 @@ void setupIrServer(const char* ssid, const char* password,String ip) {
   mainServer.on("/delete", handleDeletion);
   mainServer.on("/ydelete", handleDeleted);
 
-  mainServer.on("/shit", []() {
-    mainServer.send(200, "text/plain", "pls help.");
+  mainServer.on("/inline", []() {
+    mainServer.send(200, "text/plain", "this works as well");
   });
 
   mainServer.onNotFound(handleRoot);
@@ -160,3 +143,4 @@ void setupIrServer(const char* ssid, const char* password,String ip) {
   mainServer.begin();
   Serial.println("HTTP server started");
 }
+

@@ -75,3 +75,4 @@ String getCode(decode_results *results) {
   Serial.println("");
   return tmpOut;
 }
+

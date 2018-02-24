@@ -229,8 +229,6 @@ String getSetup(String ssid){
                "<input type=\"text\" name=\"ssid\"><br>"\
                "Password:<br>"\
                "<input type=\"password\" name=\"password\"><br><br>"\
-               "IP-Address:<br>"\
-               "<input type=\"ip\" name=\"ip\"><br><br>"\
                "<input type=\"submit\" value=\"Submit\">"\
                "<br>"\
                "</form>"\
@@ -243,3 +241,4 @@ String getSetup(String ssid){
 
 
 //TODO: HTML Effizienz, Kompetenz, Versagen.
+
