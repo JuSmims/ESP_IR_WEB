@@ -15,6 +15,10 @@ void handleSave() {
   delay(100);
 }
 
+void handleSaveGroup(){
+  //TODO nothing and make a god method in handleRoot. 
+}
+
 void handleIr() {
   //for (uint8_t i = 0; i < mainServer.args(); i++) {
   //if (mainServer.argName(i) == "code") {
@@ -182,6 +186,7 @@ void setupIrServer(const char* ssid, const char* password) {
   mainServer.on("/delete", handleDeletion);
   mainServer.on("/ydelete", handleDeleted);
   mainServer.on("/addgroup", handleGroup);
+  mainServer-on("/savegroup", handleSaveGroup);
 
   mainServer.on("/inline", []() {
     mainServer.send(200, "text/plain", "this works as well");
