@@ -29,7 +29,7 @@ void handleIr() {
 
 
 
-void handleNewIr() {
+void handleNewIrOld() {
   Serial.println(notreceived);
   if (notreceived && !startedYet) {
     startedYet = true;
@@ -71,6 +71,43 @@ void handleNewIr() {
   }
 }
 
+void handleNewIr() {
+  Serial.println(notreceived);
+  if (notreceived && timeoutCount<10) {
+    timeoutCount++;
+    //Nachdenken ist für Anfänger
+    Serial.println("handleNewIr");
+    mainServer.send(200, "text/html", getIrWait());
+      Serial.println(".");
+      if (irrecv.decode(&results)) {
+        top = getCode(&results);
+        topRaw = results.value;
+        // print() & println() can't handle printing long longs. (uint64_t)
+        serialPrintUint64(results.value, HEX);
+        Serial.println("");
+        irrecv.resume();  // Receive the next value
+        serialPrintUint64(results.value);
+        Serial.println("");
+        Serial.println("schmu received: " + top);
+        notreceived = false;
+        Serial.println("####");
+      }
+      delay(10);
+  }
+  else if (!notreceived) {
+    notreceived = true;
+    timeoutCount = 0;
+    Serial.println("handleNewIR Test1");
+    handleSave();
+  }
+  else if (timeoutCount > 9) {
+    Serial.println("nothing");
+    notreceived = true;
+    timeoutCount = 0;
+    handleRoot();
+  }
+}
+
 void handleDeletion() {
   String indexToDelete = mainServer.arg("code").c_str();
   mainServer.send(200, "text/html", getIRDeletion(indexToDelete));
@@ -96,6 +133,10 @@ void handleSaved() {
   handleRoot();
 }
 
+void handleGroup(){
+   mainServer.send(200, "text/html", getGroup());
+
+}
 void setupIrServer(const char* ssid, const char* password) {
   irsend.begin();
   WiFi.begin(ssid, password);
@@ -140,6 +181,7 @@ void setupIrServer(const char* ssid, const char* password) {
   mainServer.on("/saveHandle", handleSave);
   mainServer.on("/delete", handleDeletion);
   mainServer.on("/ydelete", handleDeleted);
+  mainServer.on("/addgroup", handleGroup);
 
   mainServer.on("/inline", []() {
     mainServer.send(200, "text/plain", "this works as well");

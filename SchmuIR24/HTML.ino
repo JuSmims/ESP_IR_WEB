@@ -22,7 +22,7 @@ String getSave(String code) {
                    "}"\
                    "</style>"\
                    "<h1>Received a <span>Signal</span> successfully</h1><br>"\
-                   "<h2>"+code+"</h2>"\
+                   "<h2>" + code + "</h2>"\
                    "<br>"\
                    "<h2>Name your Signal!</h2>"\
                    "<form action='name'><font color=\"#ffffff\"><p><input type='text' name='name' size=50 autofocus> <input type='submit' value='Submit'></form>"\
@@ -52,7 +52,7 @@ String getIrWait() {
                  "font-size: 20px;"\
                  "}"\
 
-    "span {"\
+                 "span {"\
                  "background: #fd0;"\
                  "}"\
                  ".loader {"\
@@ -62,7 +62,7 @@ String getIrWait() {
                  "z-index: 1;"\
                  "width: 150px;"\
 
-    "height: 150px;"\
+                 "height: 150px;"\
                  "margin: -75px 0 0 -75px;"\
                  "border: 16px solid #f3f3f3;"\
                  "border-radius: 50%;"\
@@ -99,7 +99,7 @@ String getMainLayout(String tmpName) {
   }
   if (notAdded) {
     Serial.println(tmpName);
-    if (tmpName.equals("")){
+    if (tmpName.equals("")) {
       tmpName = "Choose a name you murderer";
     }
     nameList.add(tmpName);
@@ -109,7 +109,7 @@ String getMainLayout(String tmpName) {
     Serial.println("Kind of Raw: " + resultList.get(resultList.size() - 1));
     notAdded = false;
   }
-  
+
   String tmp = "<html>"\
                "<title>IR-SMART-HUB</title>"\
                "<style>"\
@@ -119,20 +119,20 @@ String getMainLayout(String tmpName) {
                "font-family: monaco, monospace;"\
                "background: url(https://media.giphy.com/media/lSzQjkthGS1gc/giphy.gif) 50%;"\
                "background-size: cover;"\
-             "}"\
+               "}"\
                "h1, h2 {"\
                "display: inline-block;"\
                "background: #fff;"\
-             "}"\
+               "}"\
                "h1 {"\
                "font-size: 30px"\
-             "}"\
+               "}"\
                "h2 {"\
                "font-size: 20px;"\
-             "}"\
+               "}"\
                "span {"\
                "background: #fd0;"\
-             "}"\
+               "}"\
                "</style>"\
                "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
                "<h2>You can send and record IR-Signals from here!</h2>"\
@@ -142,11 +142,12 @@ String getMainLayout(String tmpName) {
                "<br>"\
                "<br>"\
                "<button><a href=\"addnew\">Add new IR-Signal</a></button>"\
+               "<button><a href=\"addgroup\">Add new Group</a></button>"\
                "</html>";
 
   for (int i = 1; i < resultList.size(); i++) {
     String tmpCode;
-    Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
+    Serial.println("Code for button " + nameList.get(i) + " is: " + resultList.get(i));
     tmpCode = i;
     tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a>&nbsp <a href=\"delete?code=" + tmpCode + "\"><img align=\"bottom\" height=20px width=19px src=\"https://www.dropbox.com/s/330j2gqdybinzfx/bingewesen.png?dl=1\"/></a></p>";
   }
@@ -156,45 +157,7 @@ String getMainLayout(String tmpName) {
 
   return tmp;
 }
-String getIRDeletion(String indexToDelete){
-    String tmp = "<html>"\
-               "<title>IR-SMART-HUB</title>"\
-               "<style>"\
-               "body {"\
-               "padding-top: 80px;"\
-               "text-align: center;"\
-               "font-family: monaco, monospace;"\
-               "background-color: coral;"\
-               "}"\
-               "h1, h2 {"\
-               "display: inline-block;"\
-               "background: #fff;"\
-             "}"\
-               "h1 {"\
-               "font-size: 30px"\
-             "}"\
-               "h2 {"\
-               "font-size: 20px;"\
-             "}"\
-               "span {"\
-               "background: #fd0;"\
-             "}"\
-               "</style>"\
-               "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
-               "<h2>Are you sure you want to delete ?</h2>"\
-               "<br>"\
-               "<br>"\
-               "<br>"\
-               "<p><a href=\"ydelete?code="+indexToDelete+"\">Yes </a></p>"\
-               "<p><a href=\"handleRoot\">No </a></p>"\
-               "<br>"\
-               "</html>"\
-               "</body>" \
-               "</html>";
-   return tmp;
-  }
-  
-String getSetup(String ssid){
+String getIRDeletion(String indexToDelete) {
   String tmp = "<html>"\
                "<title>IR-SMART-HUB</title>"\
                "<style>"\
@@ -207,16 +170,103 @@ String getSetup(String ssid){
                "h1, h2 {"\
                "display: inline-block;"\
                "background: #fff;"\
-             "}"\
+               "}"\
                "h1 {"\
                "font-size: 30px"\
-             "}"\
+               "}"\
                "h2 {"\
                "font-size: 20px;"\
-             "}"\
+               "}"\
                "span {"\
                "background: #fd0;"\
-             "}"\
+               "}"\
+               "</style>"\
+               "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
+               "<h2>Are you sure you want to delete ?</h2>"\
+               "<br>"\
+               "<br>"\
+               "<br>"\
+               "<p><a href=\"ydelete?code=" + indexToDelete + "\">Yes </a></p>"\
+               "<p><a href=\"handleRoot\">No </a></p>"\
+               "<br>"\
+               "</html>"\
+               "</body>" \
+               "</html>";
+  return tmp;
+}
+
+String getGroup() {
+  String tmp = "<html>"\
+               "<title>IR-SMART-HUB</title>"\
+               "<style>"\
+               "body {"\
+               "padding-top: 80px;"\
+               "text-align: center;"\
+               "font-family: monaco, monospace;"\
+               "background: url(https://media.giphy.com/media/lSzQjkthGS1gc/giphy.gif) 50%;"\
+               "background-size: cover;"\
+               "}"\
+               "h1, h2 {"\
+               "display: inline-block;"\
+               "background: #fff;"\
+               "}"\
+               "h1 {"\
+               "font-size: 30px"\
+               "}"\
+               "h2 {"\
+               "font-size: 20px;"\
+               "}"\
+               "span {"\
+               "background: #fd0;"\
+               "}"\
+               "</style>"\
+               "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
+               "<h2>You can group your IR-Signals from here!</h2>"\
+               "<br>"\
+               "<h2>Please select an option!</h2>"\
+               "<br>"\
+               "<br>"\
+               "<br>"\
+               "</html>";
+
+  for (int i = 1; i < resultList.size(); i++) {
+    String tmpCode;
+    Serial.println("Code for button " + nameList.get(i) + " is: " + resultList.get(i));
+    tmpCode = i;
+    tmp +=  "<input type=\"checkbox\" name=\"Code: "+ nameList.get(i) +" id=\"C"+ i +" value=\"0\" unchecked>\"<label for=\"C"+i+">"+ nameList.get(i)+ "</label><br>";
+  }
+
+  tmp += "<button><a href=\"savegroup\">Add Group</a></button>"\
+         "<button><a href=\"handleRoot\">Cancel</a></button>"\
+         "</body>"\
+         "</html>";
+         
+  return tmp;
+}
+
+String getSetup(String ssid) {
+  String tmp = "<html>"\
+               "<title>IR-SMART-HUB</title>"\
+               "<style>"\
+               "body {"\
+               "padding-top: 80px;"\
+               "text-align: center;"\
+               "font-family: monaco, monospace;"\
+               "background-color: coral;"\
+               "}"\
+               "h1, h2 {"\
+               "display: inline-block;"\
+               "background: #fff;"\
+               "}"\
+               "h1 {"\
+               "font-size: 30px"\
+               "}"\
+               "h2 {"\
+               "font-size: 20px;"\
+               "}"\
+               "span {"\
+               "background: #fd0;"\
+               "}"\
                "</style>"\
                "<h1>Welcome!<span> IR-SMART-HUB</span></h1><br>"\
                "<h2>Please enter your Network Information</h2>"\

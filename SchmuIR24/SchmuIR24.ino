@@ -26,6 +26,7 @@ boolean startedYet=false;   //A normal boolean, just for you.
 boolean noData = true;
 boolean serverNotNotOn = false;
 int timeout = 1000;
+int timeoutCount = 0;
 
 String top;
 uint64_t topRaw;
