@@ -26,6 +26,9 @@ void handleIr() {
   //}
   handleRoot();    //Making the code schmu again
 }
+
+
+
 void handleNewIr() {
   Serial.println(notreceived);
   if (notreceived && !startedYet) {
@@ -56,11 +59,15 @@ void handleNewIr() {
   }
   else if (!notreceived) {
     notreceived = true;
+    startedYet = false;
     Serial.println("handleNewIR Test1");
     handleSave();
   }
   else {
     Serial.println("nothing");
+    notreceived = true;
+    startedYet = false;
+    handleRoot();
   }
 }
 

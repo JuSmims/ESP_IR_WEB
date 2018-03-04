@@ -148,7 +148,7 @@ String getMainLayout(String tmpName) {
     String tmpCode;
     Serial.println("Code for button "+nameList.get(i)+" is: "+ resultList.get(i));
     tmpCode = i;
-    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a>&nbsp <a href=\"delete?code=" + tmpCode + "\"><img align=\"bottom\" height=20px width=19px src=\"https://www.dropbox.com/s/330j2gqdybinzfx/bingewesen.png?dl=1"/></a></p>";
+    tmp += "<p><a href=\"ir?code=" + tmpCode + "\">Code " + nameList.get(i) + "</a>&nbsp <a href=\"delete?code=" + tmpCode + "\"><img align=\"bottom\" height=20px width=19px src=\"https://www.dropbox.com/s/330j2gqdybinzfx/bingewesen.png?dl=1\"/></a></p>";
   }
 
   tmp += "</body>" \
